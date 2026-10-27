@@ -4,7 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>براق للشحن (Buraq) | نظام إدارة بوالص التوصيل وتتبع الأوردرات السحابي</title>
+  
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  
+  <!-- مكتبة توليد الباركود -->
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+  <!-- مكتبة تصدير الإكسيل -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -45,7 +53,7 @@
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> سحابي متصل
             </span>
           </div>
-          <p class="text-xs text-slate-400">نظام إصدار ومزامنة بوالص الشحن لحظياً</p>
+          <p class="text-xs text-slate-400">نظام إدارة ومزامنة بوالص الشحن السحابي</p>
         </div>
       </div>
 
@@ -96,6 +104,10 @@
       <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
         <h2 class="text-base font-bold text-slate-900">سجل البوالص المشتركة بين الأجهزة</h2>
         <div class="flex items-center gap-2">
+          <!-- زر تصدير إكسيل -->
+          <button type="button" id="export-excel-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-2 rounded-xl shadow flex items-center gap-1.5 transition">
+            <span>📊 تصدير إكسيل</span>
+          </button>
           <button type="button" id="refresh-cloud-btn" class="bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold px-3 py-2 rounded-xl transition">🔄 تحديث يدوي</button>
           <button type="button" id="quick-new-order-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-xl shadow transition">+ إنشاء بوليصة جديدة</button>
         </div>
@@ -125,7 +137,7 @@
       <div class="max-w-3xl mx-auto bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
           <h2 class="text-lg font-bold">إصدار بوليصة شحن جديدة</h2>
-          <span class="text-xs font-mono bg-indigo-500/20 text-indigo-200 px-3 py-1 rounded-lg">حفظ سحابي مباشر</span>
+          <span class="text-xs font-mono bg-indigo-500/20 text-indigo-200 px-3 py-1 rounded-lg">حفظ سحابي ومزامنة مباشرة</span>
         </div>
 
         <form id="order-form" class="p-6 space-y-4">
@@ -179,13 +191,13 @@
 
           <div class="flex justify-end gap-3 pt-3 border-t border-slate-200">
             <button type="button" id="cancel-form-btn" class="px-4 py-2 border rounded-xl text-sm font-semibold text-slate-700">إلغاء</button>
-            <button type="submit" id="save-order-submit-btn" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold shadow transition">حفظ وإرسال للسحابة فوراً</button>
+            <button type="submit" id="save-order-submit-btn" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold shadow transition">حفظ وإصدار البوليصة فوراً</button>
           </div>
         </form>
       </div>
     </section>
 
-    <!-- TAB 3: WAYBILL VIEW -->
+    <!-- TAB 3: WAYBILL VIEW WITH BARCODE -->
     <section id="tab-waybill-view" class="tab-panel hidden space-y-4">
       <div class="flex justify-between items-center bg-white p-4 rounded-2xl border border-slate-200 shadow-sm no-print">
         <div class="flex items-center gap-2">
@@ -247,10 +259,12 @@
     </div>
   </div>
 
-  <!-- JAVASCRIPT -->
+  <!-- JAVASCRIPT LOGIC -->
   <script>
     const SB_BASE = "https://fokypanshgtlowdmldix.supabase.co/rest/v1";
-    const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZva3lwYW5zaGd0bG93ZG1sZGl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMxMDI3MDAsImV4cCI6MjEwODY3ODcwMH0.ET3z8IaYTZCyApnrsNSNAnEAdLvQ2ZjpqdqHArPzw2c";
+    // المفتاح الصحيح الذي تم تأكيده
+    const SB_KEY = "ضع_مفتاeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZva3lwYW5zaGd0bG93ZG1sZGl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMxMDI3MDAsImV4cCI6MjEwODY3ODcwMH0.ET3z8IaYTZCyApnrsNSNAnEAdLvQ2ZjpqdqHArPzw2c";
+    
     const HEADERS = {
       "apikey": SB_KEY,
       "Authorization": `Bearer ${SB_KEY}`,
@@ -298,6 +312,41 @@
       } catch (err) {
         console.error("خطأ في جلب البوالص:", err);
       }
+    }
+
+    // تصدير الشحنات إلى ملف إكسيل Excel
+    function exportOrdersToExcel() {
+      if (cloudOrders.length === 0) {
+        alert("لا توجد بوالص مسجلة حالياً لتصديرها.");
+        return;
+      }
+
+      const excelData = cloudOrders.map((o, idx) => ({
+        "م": idx + 1,
+        "رقم البوليصة": o.id,
+        "تاريخ الإصدار": o.createdAt,
+        "اسم الراسل (التاجر)": o.senderName,
+        "هاتف الراسل": o.senderPhone,
+        "اسم المستلم": o.recipientName,
+        "هاتف المستلم": o.recipientPhone,
+        "المدينة / المنطقة": o.recipientCity,
+        "العنوان بالتفصيل": o.recipientAddress,
+        "وصف الشحنة": o.packageDesc,
+        "سعر البضاعة (ج.م)": Number(o.itemPrice || 0),
+        "تكلفة الشحن (ج.م)": Number(o.deliveryFee || 0),
+        "إجمالي التحصيل COD (ج.م)": Number(o.itemPrice || 0) + Number(o.deliveryFee || 0),
+        "الحالة": o.status || 'مسجلة'
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(excelData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "بوالص الشحن");
+
+      // ضبط اتجاه الورقة من اليمين لليسار في الإكسيل
+      worksheet['!views'] = [{ rightToLeft: true }];
+
+      const fileName = `بوالص_براق_للشحن_${new Date().toISOString().slice(0, 10)}.xlsx`;
+      XLSX.writeFile(workbook, fileName);
     }
 
     function renderDashboard() {
@@ -350,7 +399,10 @@
             <h2 class="text-xl font-black">${companyInfo.name}</h2>
             <p class="text-xs text-slate-500">خدمة العملاء: ${companyInfo.phone} | التاريخ: ${order.createdAt}</p>
           </div>
-          <div class="text-left font-mono font-bold text-lg text-indigo-700">${order.id}</div>
+          <!-- الباركود القابل للطباعة والمسح الضوئي -->
+          <div class="flex flex-col items-center">
+            <svg id="waybill-barcode-svg"></svg>
+          </div>
         </div>
         <div class="grid grid-cols-2 gap-4 my-4">
           <div class="border p-3 rounded-lg bg-slate-50">
@@ -373,6 +425,21 @@
           <span class="text-2xl font-black num-font">${total.toLocaleString()} ج.م</span>
         </div>
       `;
+
+      // توليد الباركود فوراً
+      try {
+        JsBarcode("#waybill-barcode-svg", order.id, {
+          format: "CODE128",
+          width: 1.8,
+          height: 42,
+          displayValue: true,
+          font: "Inter",
+          fontSize: 12,
+          margin: 0
+        });
+      } catch (e) {
+        console.error("خطأ في رسم الباركود:", e);
+      }
     }
 
     function openWaybillView(id) {
@@ -396,13 +463,14 @@
       loadSettingsFromCloud();
       loadOrdersFromCloud();
 
-      // تحديث تلقائي كل 10 ثوانٍ لسماع أي بوليصة يضيفها أي عميل
+      // تحديث دوري كل 10 ثوانٍ
       setInterval(loadOrdersFromCloud, 10000);
 
       document.querySelectorAll('.nav-tab-btn').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
       document.getElementById('quick-new-order-btn').addEventListener('click', () => switchTab('new-order'));
       document.getElementById('cancel-form-btn').addEventListener('click', () => switchTab('dashboard'));
       document.getElementById('refresh-cloud-btn').addEventListener('click', loadOrdersFromCloud);
+      document.getElementById('export-excel-btn').addEventListener('click', exportOrdersToExcel);
       document.getElementById('waybill-order-selector').addEventListener('change', e => renderWaybill(e.target.value));
 
       // نموذج حفظ البوليصة سحابياً
@@ -439,7 +507,7 @@
           });
 
           if (res.ok) {
-            alert(`تم حفظ البوليصة (${newAwbId}) في السحابة بنجاح! ستظهر فوراً عند الجميع.`);
+            alert(`تم حفظ البوليصة (${newAwbId}) في السحابة بنجاح!`);
             document.getElementById('order-form').reset();
             await loadOrdersFromCloud();
             openWaybillView(newAwbId);
@@ -451,7 +519,7 @@
           alert('خطأ اتصال بالشبكة: ' + err.message);
         } finally {
           btn.disabled = false;
-          btn.textContent = 'حفظ وإرسال للسحابة فوراً';
+          btn.textContent = 'حفظ وإصدار البوليصة فوراً';
         }
       });
 
