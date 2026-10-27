@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>براق للشحن (Buraq) | نظام إدارة بوالص التوصيل وتتبع الأوردرات</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <!-- Supabase Library -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -41,7 +39,6 @@
     .num-font {
       font-family: 'Inter', 'Cairo', sans-serif;
     }
-    /* Print styling so only the waybill prints cleanly */
     @media print {
       body * {
         visibility: hidden;
@@ -64,7 +61,6 @@
         display: none !important;
       }
     }
-    /* Custom scrollbar */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
@@ -139,9 +135,8 @@
   <!-- Main Workspace -->
   <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6">
 
-    <!-- ==================== TAB 1: DASHBOARD & ORDERS ==================== -->
+    <!-- TAB 1: DASHBOARD & ORDERS -->
     <section id="tab-dashboard" class="tab-panel space-y-6">
-      <!-- Top KPI Cards -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm flex items-center justify-between">
           <div>
@@ -197,7 +192,7 @@
         </div>
       </div>
 
-      <!-- Filter & Action Bar -->
+      <!-- Filters & Actions -->
       <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div class="flex items-center gap-2">
@@ -215,11 +210,9 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-          <!-- Search input -->
           <div class="md:col-span-2 relative">
             <input type="text" id="search-orders-input" placeholder="ابحث برقم البوليصة، اسم العميل، المستلم، أو رقم الموبايل..." class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2 text-sm focus:bg-white focus:border-indigo-500 focus:outline-none" />
           </div>
-          <!-- Status Filter -->
           <div>
             <select id="filter-status-select" class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-sm focus:bg-white focus:border-indigo-500 focus:outline-none">
               <option value="ALL">كل الحالات</option>
@@ -231,7 +224,6 @@
               <option value="RETURNED">مرتجع</option>
             </select>
           </div>
-          <!-- Courier Filter -->
           <div>
             <select id="filter-courier-select" class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-sm focus:bg-white focus:border-indigo-500 focus:outline-none">
               <option value="ALL">كل الموصلاتية (المناديب)</option>
@@ -256,15 +248,13 @@
                 <th class="py-3.5 px-4 text-center">إجراءات وبوليصة</th>
               </tr>
             </thead>
-            <tbody id="orders-table-body" class="divide-y divide-slate-100">
-              <!-- Populated by JS -->
-            </tbody>
+            <tbody id="orders-table-body" class="divide-y divide-slate-100"></tbody>
           </table>
         </div>
       </div>
     </section>
 
-    <!-- ==================== TAB 2: CREATE / EDIT WAYBILL ==================== -->
+    <!-- TAB 2: CREATE / EDIT WAYBILL -->
     <section id="tab-new-order" class="tab-panel hidden">
       <div class="max-w-4xl mx-auto bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
@@ -278,9 +268,7 @@
         <form id="order-form" class="p-6 space-y-6">
           <input type="hidden" id="edit-order-id" value="" />
 
-          <!-- Section 1: Sender & Recipient -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Sender Box -->
             <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
               <div class="flex items-center justify-between border-b border-slate-200 pb-2">
                 <h3 class="text-sm font-bold text-indigo-900">1. بيانات الراسل (العميل / التاجر)</h3>
@@ -300,7 +288,6 @@
               </div>
             </div>
 
-            <!-- Recipient Box -->
             <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
               <div class="flex items-center justify-between border-b border-slate-200 pb-2">
                 <h3 class="text-sm font-bold text-emerald-900">2. بيانات المرسل إليه (المستلم)</h3>
@@ -336,9 +323,7 @@
             </div>
           </div>
 
-          <!-- Section 2: Package Specs & Financials -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Package Details -->
             <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
               <h3 class="text-sm font-bold text-slate-900 border-b border-slate-200 pb-2">3. مواصفات الشحنة وتعليمات التسليم</h3>
               <div>
@@ -373,23 +358,20 @@
                 </div>
                 <div>
                   <label class="block text-xs font-semibold text-slate-700 mb-1">المندوب المكلّف (الموصلاتي)</label>
-                  <select id="assign-courier" class="w-full rounded-lg border border-slate-300 px-2.5 py-2 text-xs bg-white focus:border-indigo-500 focus:outline-none">
-                    <!-- Populated by JS -->
-                  </select>
+                  <select id="assign-courier" class="w-full rounded-lg border border-slate-300 px-2.5 py-2 text-xs bg-white focus:border-indigo-500 focus:outline-none"></select>
                 </div>
               </div>
               <div>
                 <label class="block text-xs font-semibold text-slate-700 mb-1">ملاحظات إضافية على البوليصة</label>
-                <input type="text" id="package-notes" placeholder="مثال: الاتصال قبل الوصول بنصف ساعة - التسليم بعد الساعة 4 عصراً" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none" />
+                <input type="text" id="package-notes" placeholder="مثال: الاتصال قبل الوصول بنصف ساعة" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none" />
               </div>
             </div>
 
-            <!-- Financial Calculation Box -->
             <div class="bg-indigo-50/60 p-4 rounded-xl border border-indigo-200 space-y-3">
-              <h3 class="text-sm font-bold text-indigo-950 border-b border-indigo-200 pb-2">4. الحسابات المالية للبوليصة (COD & Commission)</h3>
+              <h3 class="text-sm font-bold text-indigo-950 border-b border-indigo-200 pb-2">4. الحسابات المالية للبوليصة (COD)</h3>
               <div class="grid grid-cols-2 gap-3">
                 <div>
-                  <label class="block text-xs font-semibold text-slate-700 mb-1">ثمن البضاعة (لصالح الراسل) ج.م *</label>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">ثمن البضاعة (للتاجر) ج.م *</label>
                   <input type="number" id="fin-item-price" min="0" step="5" value="450" required class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm font-bold num-font focus:border-indigo-500 focus:outline-none" />
                 </div>
                 <div>
@@ -400,22 +382,21 @@
 
               <div class="grid grid-cols-2 gap-3">
                 <div>
-                  <label class="block text-xs font-semibold text-slate-700 mb-1">نسبة الشركة من التوصيل (%)</label>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">نسبة الشركة (%)</label>
                   <input type="number" id="fin-company-pct" min="0" max="100" value="25" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm num-font focus:border-indigo-500 focus:outline-none" />
                 </div>
                 <div>
                   <label class="block text-xs font-semibold text-slate-700 mb-1">طريقة السداد</label>
                   <select id="fin-payment-type" class="w-full rounded-lg border border-slate-300 px-2.5 py-2 text-xs bg-white focus:border-indigo-500 focus:outline-none">
                     <option value="COD">تحصيل نقدي عند الاستلام (COD)</option>
-                    <option value="PREPAID">خالص الدفع مسبقاً (تحصيل 0)</option>
+                    <option value="PREPAID">خالص الدفع مسبقاً</option>
                   </select>
                 </div>
               </div>
 
-              <!-- Live Financial Breakdown -->
               <div class="bg-white rounded-xl p-3.5 border border-indigo-200 space-y-2 mt-2">
                 <div class="flex items-center justify-between text-xs text-slate-600">
-                  <span>صافي مستحقات الراسل (التاجر):</span>
+                  <span>صافي مستحقات التاجر:</span>
                   <span id="calc-merchant-net" class="font-bold text-slate-800 num-font">450 ج.م</span>
                 </div>
                 <div class="flex items-center justify-between text-xs text-slate-600">
@@ -423,18 +404,17 @@
                   <span id="calc-courier-fee" class="font-bold text-emerald-700 num-font">45 ج.م</span>
                 </div>
                 <div class="flex items-center justify-between text-xs text-slate-600">
-                  <span>عمولة الشركة الوسيطة:</span>
+                  <span>عمولة الشركة:</span>
                   <span id="calc-company-fee" class="font-bold text-indigo-600 num-font">15 ج.م</span>
                 </div>
                 <div class="border-t border-slate-200 pt-2 flex items-center justify-between">
-                  <span class="text-sm font-extrabold text-slate-900">إجمالي المطلوب تحصيله من المستلم:</span>
+                  <span class="text-sm font-extrabold text-slate-900">المطلوب تحصيله من المستلم:</span>
                   <span id="calc-total-cod" class="text-lg font-extrabold text-indigo-700 num-font">510 ج.م</span>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Submit Actions -->
           <div class="flex flex-wrap items-center justify-end gap-3 pt-2 border-t border-slate-200">
             <button type="button" id="cancel-form-btn" class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-sm font-semibold hover:bg-slate-100 transition">
               إلغاء والعودة
@@ -447,15 +427,12 @@
       </div>
     </section>
 
-    <!-- ==================== TAB 3: WAYBILL PREVIEW & PRINT ==================== -->
+    <!-- TAB 3: WAYBILL PREVIEW & PRINT -->
     <section id="tab-waybill-view" class="tab-panel hidden space-y-5">
-      <!-- Toolbar -->
       <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3 no-print">
         <div class="flex flex-wrap items-center gap-3">
           <label class="text-xs font-bold text-slate-700">اختر البوليصة للمعاينة:</label>
-          <select id="waybill-order-selector" class="rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-sm font-semibold focus:border-indigo-500 focus:outline-none">
-            <!-- Populated by JS -->
-          </select>
+          <select id="waybill-order-selector" class="rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-sm font-semibold focus:border-indigo-500 focus:outline-none"></select>
 
           <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
             <button type="button" id="size-standard-btn" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-900 shadow-sm transition">
@@ -480,15 +457,12 @@
         </div>
       </div>
 
-      <!-- Printable Waybill Container -->
       <div class="flex justify-center">
-        <div id="printable-waybill-area" class="w-full max-w-3xl bg-white text-slate-950 border-2 border-slate-900 rounded-xl p-5 shadow-md transition-all">
-          <!-- Populated dynamically by renderWaybill() -->
-        </div>
+        <div id="printable-waybill-area" class="w-full max-w-3xl bg-white text-slate-950 border-2 border-slate-900 rounded-xl p-5 shadow-md transition-all"></div>
       </div>
     </section>
 
-    <!-- ==================== TAB 4: PUBLIC CUSTOMER TRACKING PORTAL ==================== -->
+    <!-- TAB 4: CUSTOMER TRACKING PORTAL -->
     <section id="tab-customer-tracking" class="tab-panel hidden space-y-6">
       <div class="max-w-3xl mx-auto bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
         <div class="text-center space-y-2">
@@ -497,7 +471,6 @@
           <p class="text-xs sm:text-sm text-slate-500">أدخل رقم البوليصة في براق للشحن (مثال: <span class="font-mono font-semibold text-slate-700">BRQ-1001</span>) لمعرفة خط سير الأوردر وبيانات المندوب</p>
         </div>
 
-        <!-- Search Box -->
         <div class="flex flex-col sm:flex-row gap-2 max-w-xl mx-auto">
           <input type="text" id="track-search-input" placeholder="أدخل رقم البوليصة مثل BRQ-1001..." class="flex-1 rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-mono focus:border-indigo-600 focus:outline-none" />
           <button type="button" id="track-search-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm px-6 py-2.5 rounded-xl shadow transition">
@@ -505,22 +478,14 @@
           </button>
         </div>
 
-        <!-- Quick sample pills -->
-        <div id="sample-awb-pills" class="flex flex-wrap items-center justify-center gap-2 text-xs">
-          <!-- Populated by JS -->
-        </div>
-
-        <!-- Tracking Result Container -->
-        <div id="tracking-result-box" class="border-t border-slate-200 pt-6">
-          <!-- Populated by JS -->
-        </div>
+        <div id="sample-awb-pills" class="flex flex-wrap items-center justify-center gap-2 text-xs"></div>
+        <div id="tracking-result-box" class="border-t border-slate-200 pt-6"></div>
       </div>
     </section>
 
-    <!-- ==================== TAB 5: COURIERS & FINANCIAL SETTLEMENTS ==================== -->
+    <!-- TAB 5: COURIERS & SETTLEMENTS -->
     <section id="tab-couriers" class="tab-panel hidden space-y-6">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Add New Courier Form -->
         <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm h-fit space-y-4">
           <h3 class="text-base font-bold text-slate-900 border-b border-slate-200 pb-2">إضافة مندوب (موصلاتي) جديد</h3>
           <form id="courier-form" class="space-y-3">
@@ -552,13 +517,10 @@
           </form>
         </div>
 
-        <!-- Couriers List & Cash Custody Table -->
         <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
-          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-3">
-            <div>
-              <h3 class="text-base font-bold text-slate-900">قائمة الموصلاتية وتسوية العهدة النقدية</h3>
-              <p class="text-xs text-slate-500">متابعة الأوردرات المسندة لكل مندوب وإجمالي النقدية المحصلة والمطلوب توريدها</p>
-            </div>
+          <div class="border-b border-slate-200 pb-3">
+            <h3 class="text-base font-bold text-slate-900">قائمة الموصلاتية وتسوية العهدة النقدية</h3>
+            <p class="text-xs text-slate-500">متابعة الأوردرات المسندة لكل مندوب وإجمالي النقدية المحصلة والمطلوب توريدها</p>
           </div>
 
           <div class="overflow-x-auto">
@@ -573,9 +535,7 @@
                   <th class="py-3 px-3">صافي التوريد للشركة</th>
                 </tr>
               </thead>
-              <tbody id="couriers-table-body" class="divide-y divide-slate-100">
-                <!-- Populated by JS -->
-              </tbody>
+              <tbody id="couriers-table-body" class="divide-y divide-slate-100"></tbody>
             </table>
           </div>
         </div>
@@ -584,7 +544,7 @@
 
   </main>
 
-  <!-- ==================== MODAL: COMPANY SETTINGS ==================== -->
+  <!-- MODAL: COMPANY SETTINGS -->
   <div id="settings-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-40 hidden items-center justify-center p-4 no-print">
     <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200 space-y-4">
       <div class="flex items-center justify-between border-b border-slate-200 pb-3">
@@ -597,7 +557,7 @@
           <input type="text" id="setting-company-name" required class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none" />
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">رقم خدمة العملاء والشكاوى (يظهر في البوليصة)</label>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">رقم خدمة العملاء والشكاوى</label>
           <input type="text" id="setting-company-phone" required class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm num-font focus:border-indigo-500 focus:outline-none" />
         </div>
         <div>
@@ -609,7 +569,7 @@
           <input type="text" id="setting-company-address" placeholder="العاشر من رمضان" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none" />
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">نسبة عمولة الشركة الافتراضية من التوصيل (%)</label>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">نسبة عمولة الشركة الافتراضية (%)</label>
           <input type="number" id="setting-default-pct" min="0" max="100" required class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm num-font focus:border-indigo-500 focus:outline-none" />
         </div>
         <div>
@@ -624,7 +584,7 @@
     </div>
   </div>
 
-  <!-- ==================== MODAL: UPDATE STATUS & TIMELINE ==================== -->
+  <!-- MODAL: UPDATE STATUS -->
   <div id="status-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-40 hidden items-center justify-center p-4 no-print">
     <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl border border-slate-200 space-y-4">
       <div class="flex items-center justify-between border-b border-slate-200 pb-3">
@@ -650,15 +610,13 @@
             </select>
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">المندوب المسؤول (الموصلاتي)</label>
-            <select id="status-modal-courier" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm bg-white focus:border-indigo-500 focus:outline-none">
-              <!-- Populated by JS -->
-            </select>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">المندوب المسؤول</label>
+            <select id="status-modal-courier" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm bg-white focus:border-indigo-500 focus:outline-none"></select>
           </div>
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">ملاحظة التحديث (تظهر في سجل التتبع)</label>
-          <input type="text" id="status-modal-note" placeholder="مثال: استلم المندوب الشحنة وفي الطريق للمستلم..." class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none" />
+          <label class="block text-xs font-semibold text-slate-700 mb-1">ملاحظة التحديث</label>
+          <input type="text" id="status-modal-note" placeholder="مثال: استلم المندوب الشحنة وفي الطريق..." class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none" />
         </div>
         <div class="flex justify-end gap-2 pt-2">
           <button type="button" id="cancel-status-modal-btn" class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700">إغلاق</button>
@@ -666,62 +624,24 @@
         </div>
       </form>
 
-      <!-- Mini Timeline inside Modal -->
       <div class="border-t border-slate-200 pt-3">
-        <h4 class="text-xs font-bold text-slate-600 mb-2">سجل الحركات السابقة (Timeline):</h4>
+        <h4 class="text-xs font-bold text-slate-600 mb-2">سجل الحركات السابقة:</h4>
         <div id="status-modal-timeline" class="max-h-44 overflow-y-auto space-y-2 pr-1"></div>
       </div>
     </div>
   </div>
 
-  <!-- Application Script -->
+  <!-- SCRIPT -->
   <script>
-    // ==================== SUPABASE CLIENT CONFIG ====================
-    const SUPABASE_URL = "https://fokypanshgtlowdmldix.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_qqdpsmnxxFoTE3uDVfd1Rg_kLCMcw8";
-    const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
-
-    // ==================== STATUS METADATA ====================
     const STATUS_MAP = {
-      CREATED: {
-        label: 'تم إنشاء البوليصة',
-        badge: 'bg-slate-100 text-slate-700 border-slate-300',
-        dot: 'bg-slate-500',
-        step: 1
-      },
-      PICKED_UP: {
-        label: 'تم الاستلام من الراسل',
-        badge: 'bg-sky-50 text-sky-700 border-sky-200',
-        dot: 'bg-sky-500',
-        step: 2
-      },
-      OUT_FOR_DELIVERY: {
-        label: 'مع المندوب للتوصيل',
-        badge: 'bg-amber-50 text-amber-800 border-amber-200',
-        dot: 'bg-amber-500',
-        step: 3
-      },
-      DELIVERED: {
-        label: 'تم التسليم والتحصيل',
-        badge: 'bg-emerald-50 text-emerald-800 border-emerald-200',
-        dot: 'bg-emerald-500',
-        step: 4
-      },
-      POSTPONED: {
-        label: 'مؤجل لليوم التالي',
-        badge: 'bg-purple-50 text-purple-800 border-purple-200',
-        dot: 'bg-purple-500',
-        step: 3
-      },
-      RETURNED: {
-        label: 'مرتجع',
-        badge: 'bg-rose-50 text-rose-800 border-rose-200',
-        dot: 'bg-rose-500',
-        step: 4
-      }
+      CREATED: { label: 'تم إنشاء البوليصة', badge: 'bg-slate-100 text-slate-700 border-slate-300', dot: 'bg-slate-500', step: 1 },
+      PICKED_UP: { label: 'تم الاستلام من الراسل', badge: 'bg-sky-50 text-sky-700 border-sky-200', dot: 'bg-sky-500', step: 2 },
+      OUT_FOR_DELIVERY: { label: 'مع المندوب للتوصيل', badge: 'bg-amber-50 text-amber-800 border-amber-200', dot: 'bg-amber-500', step: 3 },
+      DELIVERED: { label: 'تم التسليم والتحصيل', badge: 'bg-emerald-50 text-emerald-800 border-emerald-200', dot: 'bg-emerald-500', step: 4 },
+      POSTPONED: { label: 'مؤجل لليوم التالي', badge: 'bg-purple-50 text-purple-800 border-purple-200', dot: 'bg-purple-500', step: 3 },
+      RETURNED: { label: 'مرتجع', badge: 'bg-rose-50 text-rose-800 border-rose-200', dot: 'bg-rose-500', step: 4 }
     };
 
-    // ==================== INITIAL STATE ====================
     let appState = {
       company: {
         name: 'براق للشحن | Buraq',
@@ -729,9 +649,9 @@
         email: 'info@buraq.com',
         address: 'العاشر من رمضان',
         defaultCompanyPct: 25,
-        terms: 'شركة براق للشحن (Buraq) وسيط توصيل بين الراسل والمستلم. يرجى مراجعة الشحنة في وجود المندوب، وفي حالة الرفض يتم سداد مصاريف الشحن المقررة.'
+        terms: 'شركة براق للشحن (Buraq) وسيط توصيل بين الراسل والمستلم. يرجى مراجعة الشحنة في وجود المندوب.'
       },
-      waybillPrintFormat: 'standard', // 'standard' or 'thermal'
+      waybillPrintFormat: 'standard',
       selectedWaybillOrderId: 'BRQ-1001',
       couriers: [
         { id: 'CR-1', name: 'كابتن محمد سعيد', phone: '01012345678', vehicle: 'موتوسيكل', zone: 'العاشر من رمضان والعبور' },
@@ -763,20 +683,20 @@
           status: 'OUT_FOR_DELIVERY',
           timeline: [
             { status: 'CREATED', time: '2026-10-26 10:30 ص', note: 'تم تسجيل الأوردر وإصدار بوليصة التوصيل' },
-            { status: 'PICKED_UP', time: '2026-10-26 12:15 م', note: 'تم استلام الشحنة من مقر التاجر (متجر تك زوون)' },
+            { status: 'PICKED_UP', time: '2026-10-26 12:15 م', note: 'تم استلام الشحنة من مقر التاجر' },
             { status: 'OUT_FOR_DELIVERY', time: '2026-10-26 02:40 م', note: 'خرجت الشحنة للتوصيل مع كابتن حسن عبد الله' }
           ]
         },
         {
           id: 'BRQ-1002',
           createdAt: '2026-10-26 09:15 ص',
-          senderName: 'أتيليه ومصنع فريدة فاشون',
+          senderName: 'أتيليه فريدة فاشون',
           senderPhone: '01066554411',
           senderAddress: 'العاشر من رمضان - المجاورة 39',
           recipientName: 'مريم خالد الشامي',
           recipientPhone: '01022334455',
           recipientCity: 'العاشر من رمضان',
-          recipientAddress: 'المجاورة 14 - شارع القدس - فيلا 18',
+          recipientAddress: 'المجاورة 14 - شارع القدس',
           packageDesc: 'طقم ملابس كاجوال 3 قطع',
           pieces: 3,
           weight: 1.0,
@@ -791,46 +711,17 @@
           status: 'DELIVERED',
           timeline: [
             { status: 'CREATED', time: '2026-10-26 09:15 ص', note: 'تم إنشاء البوليصة' },
-            { status: 'PICKED_UP', time: '2026-10-26 11:00 ص', note: 'تم الاستلام من الراسل' },
-            { status: 'OUT_FOR_DELIVERY', time: '2026-10-26 01:00 م', note: 'مع كابتن محمد سعيد في الطريق للمستلم' },
-            { status: 'DELIVERED', time: '2026-10-26 03:20 م', note: 'تم التسليم بنجاح وتحصيل مبلغ 640 ج.م نقداً' }
-          ]
-        },
-        {
-          id: 'BRQ-1003',
-          createdAt: '2026-10-26 04:10 م',
-          senderName: 'مكتبة المعرفة للنشر',
-          senderPhone: '01288776655',
-          senderAddress: 'الزقازيق - حي الجامعة',
-          recipientName: 'د. عمر عبد العزيز',
-          recipientPhone: '01033998877',
-          recipientCity: 'الزقازيق - الشرقية',
-          recipientAddress: 'شارع القومية - برج الأطباء - الدور الخامس',
-          packageDesc: 'مجموعة كتب ومراجع طبية (4 كتب)',
-          pieces: 1,
-          weight: 3.0,
-          inspection: 'غير مسموح بالفتح قبل الدفع',
-          fragile: 'مستندات هامة',
-          notes: 'تسليم بالعيادة من 5 إلى 9 مساءً',
-          courierId: '',
-          itemPrice: 420,
-          deliveryFee: 50,
-          companyPct: 25,
-          paymentType: 'COD',
-          status: 'CREATED',
-          timeline: [
-            { status: 'CREATED', time: '2026-10-26 04:10 م', note: 'تم إصدار البوليصة وبانتظار تعيين مندوب الاستلام' }
+            { status: 'DELIVERED', time: '2026-10-26 03:20 م', note: 'تم التسليم بنجاح وتحصيل مبلغ 640 ج.م' }
           ]
         }
       ]
     };
 
-    // Load saved state safely
     try {
       const saved = localStorage.getItem('buraq_delivery_state_v2');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed && Array.isArray(parsed.orders) && Array.isArray(parsed.couriers)) {
+        if (parsed && Array.isArray(parsed.orders)) {
           appState = parsed;
         }
       }
@@ -842,64 +733,71 @@
       } catch (e) {}
     }
 
-    // ==================== SUPABASE SETTINGS SYNC ====================
-    async function loadCompanySettingsFromCloud() {
-      if (!supabase) return;
-      try {
-        const { data, error } = await supabase
-          .from('settings')
-          .select('*')
-          .limit(1);
+    // Direct Cloud sync for Supabase
+    const SB_URL = "https://fokypanshgtlowdmldix.supabase.co/rest/v1/settings";
+    const SB_KEY = "sb_publishable_qqdpsmnxxFoTE3uDVfd1Rg_kLCMcw8";
 
-        if (!error && data && data.length > 0) {
-          const row = data[0];
-          if (row['Company_ Name']) appState.company.name = row['Company_ Name'];
-          if (row.Phone) appState.company.phone = row.Phone;
-          if (row.Email) appState.company.email = row.Email;
-          if (row.Address) appState.company.address = row.Address;
-          saveState();
-          renderDashboard();
-          renderWaybill();
+    async function syncCompanyFromCloud() {
+      try {
+        const res = await fetch(`${SB_URL}?select=*&limit=1`, {
+          headers: { "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}` }
+        });
+        if (res.ok) {
+          const list = await res.json();
+          if (list && list.length > 0) {
+            const row = list[0];
+            if (row['Company_ Name']) appState.company.name = row['Company_ Name'];
+            if (row.Phone) appState.company.phone = row.Phone;
+            if (row.Email) appState.company.email = row.Email;
+            if (row.Address) appState.company.address = row.Address;
+            saveState();
+            renderDashboard();
+            renderWaybill();
+          }
         }
-      } catch (err) {
-        console.warn('Could not load settings from cloud:', err);
-      }
+      } catch (err) {}
     }
 
-    async function saveCompanySettingsToCloud(name, phone, email, address) {
-      if (!supabase) return false;
+    async function syncCompanyToCloud(name, phone, email, address) {
       try {
-        // فحص وجود صف لتحديثه أو إدخال جديد
-        const { data: existing } = await supabase.from('settings').select('*').limit(1);
-        let res;
-        if (existing && existing.length > 0) {
-          res = await supabase
-            .from('settings')
-            .update({
-              "Company_ Name": name,
-              "Phone": phone,
-              "Email": email,
-              "Address": address
-            })
-            .neq('Company_ Name', '___IMPOSSIBLE_VALUE___');
+        const getRes = await fetch(`${SB_URL}?select=*&limit=1`, {
+          headers: { "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}` }
+        });
+        const rows = await getRes.json();
+        
+        const payload = {
+          "Company_ Name": name,
+          "Phone": phone,
+          "Email": email,
+          "Address": address
+        };
+
+        if (rows && rows.length > 0) {
+          await fetch(`${SB_URL}?Company_%20Name=neq.___none___`, {
+            method: 'PATCH',
+            headers: {
+              "apikey": SB_KEY,
+              "Authorization": `Bearer ${SB_KEY}`,
+              "Content-Type": "application/json",
+              "Prefer": "return=minimal"
+            },
+            body: JSON.stringify(payload)
+          });
         } else {
-          res = await supabase
-            .from('settings')
-            .insert([{
-              "Company_ Name": name,
-              "Phone": phone,
-              "Email": email,
-              "Address": address
-            }]);
+          await fetch(SB_URL, {
+            method: 'POST',
+            headers: {
+              "apikey": SB_KEY,
+              "Authorization": `Bearer ${SB_KEY}`,
+              "Content-Type": "application/json",
+              "Prefer": "return=minimal"
+            },
+            body: JSON.stringify([payload])
+          });
         }
-        return !res.error;
-      } catch (e) {
-        console.error(e);
-        return false;
-      }
+      } catch (e) {}
     }
 
-    // ==================== HELPER FUNCTIONS ====================
     function showToast(message, type = 'success') {
       const container = document.getElementById('toast-container');
       const toast = document.createElement('div');
@@ -910,7 +808,7 @@
       setTimeout(() => {
         toast.style.opacity = '0';
         setTimeout(() => toast.remove(), 300);
-      }, 3200);
+      }, 3000);
     }
 
     function formatNowArabic() {
@@ -942,81 +840,34 @@
       const companyCommission = Math.round((deliveryFee * companyPct) / 100);
       const courierShare = deliveryFee - companyCommission;
       const totalCod = order.paymentType === 'PREPAID' ? 0 : (itemPrice + deliveryFee);
-      return {
-        itemPrice,
-        deliveryFee,
-        companyPct,
-        companyCommission,
-        courierShare,
-        totalCod
-      };
+      return { itemPrice, deliveryFee, companyPct, companyCommission, courierShare, totalCod };
     }
 
     function getCourierById(courierId) {
       return appState.couriers.find(c => c.id === courierId) || null;
     }
 
-    function generateBarcodeSvg(codeText, height = 46) {
+    function generateBarcodeSvg(codeText, height = 44) {
       const clean = String(codeText || 'SHP-1000');
       let bars = '';
       let x = 6;
       for (let i = 0; i < clean.length; i++) {
         const charCode = clean.charCodeAt(i);
-        const widths = [
-          (charCode % 3) + 1.5,
-          ((charCode >> 2) % 2) + 1,
-          ((charCode >> 4) % 3) + 1.5,
-          1.5
-        ];
+        const widths = [(charCode % 3) + 1.5, ((charCode >> 2) % 2) + 1, 1.5];
         for (let b = 0; b < widths.length; b++) {
           const w = widths[b];
-          if (b % 2 === 0) {
-            bars += `<rect x="${x}" y="2" width="${w}" height="${height}" fill="#0f172a" />`;
-          }
+          if (b % 2 === 0) bars += `<rect x="${x}" y="2" width="${w}" height="${height}" fill="#0f172a" />`;
           x += w + 1.4;
         }
       }
-      bars += `<rect x="${x}" y="2" width="2.5" height="${height}" fill="#0f172a" />`;
-      bars += `<rect x="${x + 4.5}" y="2" width="1.5" height="${height}" fill="#0f172a" />`;
-      const totalWidth = Math.max(x + 12, 160);
-      return `<svg viewBox="0 0 ${totalWidth} ${height + 4}" class="w-full max-w-[230px] h-12 mx-auto">${bars}</svg>`;
+      bars += `<rect x="${x}" y="2" width="2" height="${height}" fill="#0f172a" />`;
+      return `<svg viewBox="0 0 ${Math.max(x + 8, 160)} ${height + 4}" class="w-full max-w-[210px] h-11 mx-auto">${bars}</svg>`;
     }
 
-    function generateQrSvg(codeText) {
-      const seedStr = String(codeText || 'SHP-1001');
-      let hash = 2166136261;
-      for (let i = 0; i < seedStr.length; i++) {
-        hash ^= seedStr.charCodeAt(i);
-        hash = Math.imul(hash, 16777619);
-      }
-      const size = 13;
-      const cell = 6;
-      let rects = '';
-      const isFinder = (r, c) =>
-        (r < 4 && c < 4) || (r < 4 && c >= size - 4) || (r >= size - 4 && c < 4);
-
-      const drawFinder = (r0, c0) => {
-        rects += `<rect x="${c0 * cell}" y="${r0 * cell}" width="${3 * cell}" height="${3 * cell}" fill="none" stroke="#0f172a" stroke-width="${cell * 0.7}" />`;
-        rects += `<rect x="${(c0 + 1) * cell}" y="${(r0 + 1) * cell}" width="${cell}" height="${cell}" fill="#0f172a" />`;
-      };
-      drawFinder(0.5, 0.5);
-      drawFinder(0.5, size - 3.5);
-      drawFinder(size - 3.5, 0.5);
-
-      for (let r = 0; r < size; r++) {
-        for (let c = 0; c < size; c++) {
-          if (isFinder(r, c)) continue;
-          const bit = ((hash >>> ((r * size + c) % 28)) ^ (r * 7 + c * 13)) & 1;
-          if (bit) {
-            rects += `<rect x="${c * cell}" y="${r * cell}" width="${cell - 0.6}" height="${cell - 0.6}" fill="#0f172a" rx="1" />`;
-          }
-        }
-      }
-      const dim = size * cell;
-      return `<svg viewBox="0 0 ${dim} ${dim}" class="w-16 h-16 border border-slate-300 p-1 rounded bg-white">${rects}</svg>`;
+    function generateQrSvg() {
+      return `<div class="w-14 h-14 bg-slate-900 text-white flex items-center justify-center font-bold text-[11px] rounded-lg">QR CODE</div>`;
     }
 
-    // ==================== NAVIGATION ====================
     function switchTab(tabId) {
       document.querySelectorAll('.tab-panel').forEach(sec => sec.classList.add('hidden'));
       const target = document.getElementById(`tab-${tabId}`);
@@ -1030,23 +881,18 @@
         }
       });
 
-      if (tabId === 'dashboard') {
-        renderDashboard();
-      } else if (tabId === 'new-order') {
-        if (!document.getElementById('edit-order-id').value) {
-          prepareNewOrderForm();
-        }
-      } else if (tabId === 'waybill-view') {
+      if (tabId === 'dashboard') renderDashboard();
+      if (tabId === 'new-order') {
+        if (!document.getElementById('edit-order-id').value) prepareNewOrderForm();
+      }
+      if (tabId === 'waybill-view') {
         populateWaybillSelector();
         renderWaybill();
-      } else if (tabId === 'customer-tracking') {
-        renderCustomerTrackingPortal();
-      } else if (tabId === 'couriers') {
-        renderCouriersTab();
       }
+      if (tabId === 'customer-tracking') renderCustomerTrackingPortal();
+      if (tabId === 'couriers') renderCouriersTab();
     }
 
-    // ==================== RENDER DASHBOARD ====================
     function renderDashboard() {
       document.getElementById('header-company-name').textContent = appState.company.name;
 
@@ -1064,11 +910,7 @@
       const inTransitOrders = appState.orders.filter(o => o.status === 'OUT_FOR_DELIVERY' || o.status === 'PICKED_UP');
       const unassignedOrders = appState.orders.filter(o => !o.courierId);
 
-      let totalCodSum = 0;
-      let totalMerchantNet = 0;
-      let totalCompanyProfit = 0;
-      let totalCourierPayout = 0;
-
+      let totalCodSum = 0, totalMerchantNet = 0, totalCompanyProfit = 0, totalCourierPayout = 0;
       appState.orders.forEach(o => {
         if (o.status === 'RETURNED') return;
         const fin = computeOrderFinancials(o);
@@ -1106,13 +948,7 @@
 
       const tbody = document.getElementById('orders-table-body');
       if (filtered.length === 0) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="7" class="py-10 text-center text-slate-400">
-              لا توجد أوردرات مطابقة للبحث الحالي. اضغط على "+ إصدار بوليصة جديدة" لإضافة أوردر.
-            </td>
-          </tr>
-        `;
+        tbody.innerHTML = `<tr><td colspan="7" class="py-10 text-center text-slate-400">لا توجد أوردرات مطابقة للبحث.</td></tr>`;
         return;
       }
 
@@ -1132,19 +968,13 @@
             </td>
             <td class="py-3.5 px-4">
               <div class="font-bold text-slate-900">${order.recipientName}</div>
-              <div class="text-xs text-slate-600">${order.recipientCity} • <span class="num-font">${order.recipientPhone}</span></div>
+              <div class="text-xs text-slate-600">${order.recipientCity}</div>
             </td>
             <td class="py-3.5 px-4">
-              ${
-                courier
-                  ? `<div class="text-xs font-bold text-slate-800">${courier.name}</div>
-                     <div class="text-[11px] text-slate-500 num-font">${courier.phone}</div>`
-                  : `<span class="inline-block text-xs bg-rose-50 text-rose-700 border border-rose-200 px-2.5 py-0.5 rounded-full font-semibold">غير معين</span>`
-              }
+              ${courier ? `<div class="text-xs font-bold text-slate-800">${courier.name}</div>` : `<span class="inline-block text-xs bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded-full font-semibold">غير معين</span>`}
             </td>
             <td class="py-3.5 px-4">
               <div class="font-extrabold text-slate-900 num-font">${fin.totalCod.toLocaleString()} ج.م</div>
-              <div class="text-[11px] text-slate-500 num-font">توصيل: ${fin.deliveryFee} | عمولة: ${fin.companyCommission}</div>
             </td>
             <td class="py-3.5 px-4">
               <span class="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-full border ${st.badge}">
@@ -1154,15 +984,9 @@
             </td>
             <td class="py-3.5 px-4 text-center">
               <div class="flex items-center justify-center gap-1.5">
-                <button type="button" data-action="view-waybill" data-id="${order.id}" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold px-2.5 py-1.5 rounded-lg border border-indigo-200 transition" title="عرض وطباعة البوليصة">
-                  البوليصة
-                </button>
-                <button type="button" data-action="open-status" data-id="${order.id}" class="bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1.5 rounded-lg border border-amber-200 transition" title="تحديث الحالة والتتبع">
-                  تحديث الحالة
-                </button>
-                <button type="button" data-action="edit-order" data-id="${order.id}" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-2 py-1.5 rounded-lg transition" title="تعديل البيانات">
-                  تعديل
-                </button>
+                <button type="button" data-action="view-waybill" data-id="${order.id}" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold px-2.5 py-1.5 rounded-lg border border-indigo-200 transition">البوليصة</button>
+                <button type="button" data-action="open-status" data-id="${order.id}" class="bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1.5 rounded-lg border border-amber-200 transition">الحالة</button>
+                <button type="button" data-action="edit-order" data-id="${order.id}" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-2 py-1.5 rounded-lg transition">تعديل</button>
               </div>
             </td>
           </tr>
@@ -1170,12 +994,11 @@
       }).join('');
     }
 
-    // ==================== CREATE / EDIT WAYBILL FORM ====================
     function populateCourierSelectInForm(selectedId = '') {
       const sel = document.getElementById('assign-courier');
       sel.innerHTML = `
         <option value="">-- تعيين لاحقاً (بدون مندوب) --</option>
-        ${appState.couriers.map(c => `<option value="${c.id}">${c.name} (${c.zone})</option>`).join('')}
+        ${appState.couriers.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
       `;
       sel.value = selectedId;
     }
@@ -1209,180 +1032,73 @@
     function loadOrderIntoForm(orderId) {
       const order = appState.orders.find(o => o.id === orderId);
       if (!order) return;
-
       switchTab('new-order');
       document.getElementById('edit-order-id').value = order.id;
-      document.getElementById('form-modal-title').textContent = `تعديل بيانات البوليصة (${order.id})`;
-      document.getElementById('preview-next-awb').textContent = `AWB: ${order.id}`;
-
+      document.getElementById('form-modal-title').textContent = `تعديل بوليصة (${order.id})`;
       document.getElementById('sender-name').value = order.senderName;
       document.getElementById('sender-phone').value = order.senderPhone;
       document.getElementById('sender-address').value = order.senderAddress;
-
       document.getElementById('recipient-name').value = order.recipientName;
       document.getElementById('recipient-phone').value = order.recipientPhone;
       document.getElementById('recipient-city').value = order.recipientCity;
       document.getElementById('recipient-address').value = order.recipientAddress;
-
       document.getElementById('package-desc').value = order.packageDesc;
-      document.getElementById('package-pieces').value = order.pieces;
-      document.getElementById('package-weight').value = order.weight;
-      document.getElementById('package-inspection').value = order.inspection;
-      document.getElementById('package-fragile').value = order.fragile;
-      document.getElementById('package-notes').value = order.notes || '';
-
-      populateCourierSelectInForm(order.courierId || '');
-
       document.getElementById('fin-item-price').value = order.itemPrice;
       document.getElementById('fin-delivery-fee').value = order.deliveryFee;
-      document.getElementById('fin-company-pct').value = order.companyPct;
-      document.getElementById('fin-payment-type').value = order.paymentType;
-
+      populateCourierSelectInForm(order.courierId || '');
       updateLiveFinancialCalc();
     }
 
-    // ==================== WAYBILL PREVIEW & PRINT ====================
     function populateWaybillSelector() {
       const sel = document.getElementById('waybill-order-selector');
-      sel.innerHTML = appState.orders.map(o =>
-        `<option value="${o.id}">${o.id} — ${o.recipientName} (${o.recipientCity})</option>`
-      ).join('');
-      if (appState.selectedWaybillOrderId && appState.orders.some(o => o.id === appState.selectedWaybillOrderId)) {
-        sel.value = appState.selectedWaybillOrderId;
-      } else if (appState.orders.length > 0) {
-        appState.selectedWaybillOrderId = appState.orders[0].id;
-        sel.value = appState.selectedWaybillOrderId;
-      }
+      sel.innerHTML = appState.orders.map(o => `<option value="${o.id}">${o.id} — ${o.recipientName}</option>`).join('');
+      if (appState.selectedWaybillOrderId) sel.value = appState.selectedWaybillOrderId;
     }
 
     function renderWaybill() {
       const container = document.getElementById('printable-waybill-area');
       const order = appState.orders.find(o => o.id === appState.selectedWaybillOrderId) || appState.orders[0];
       if (!order) {
-        container.innerHTML = `<p class="text-center text-slate-400 py-8">لا توجد بوليصة لعرضها حالياً.</p>`;
+        container.innerHTML = `<p class="text-center text-slate-400 py-8">لا توجد بوليصة لعرضها.</p>`;
         return;
       }
-
       const fin = computeOrderFinancials(order);
       const courier = getCourierById(order.courierId);
-      const barcodeSvg = generateBarcodeSvg(order.id, 44);
-      const qrSvg = generateQrSvg(order.id);
-
-      if (appState.waybillPrintFormat === 'thermal') {
-        container.className = 'w-full max-w-[420px] bg-white text-slate-950 border-2 border-slate-900 rounded-xl p-4 shadow-md transition-all';
-      } else {
-        container.className = 'w-full max-w-3xl bg-white text-slate-950 border-2 border-slate-900 rounded-xl p-6 shadow-md transition-all';
-      }
-
       container.innerHTML = `
         <div class="border-b-2 border-slate-900 pb-3 flex flex-wrap items-center justify-between gap-4">
-          <div class="flex items-center gap-3">
-            <div class="w-12 h-12 rounded-xl bg-slate-900 text-white flex flex-col items-center justify-center font-mono font-black text-xs leading-none shrink-0">
-              <span>BURAQ</span>
-              <span class="text-[9px] text-indigo-300 mt-0.5">براق</span>
-            </div>
-            <div>
-              <div class="text-xs font-bold uppercase tracking-wider text-indigo-700">BURAQ EXPRESS WAYBILL • بوليصة توصيل</div>
-              <h2 class="text-xl font-extrabold text-slate-950 mt-0.5">${appState.company.name}</h2>
-              <p class="text-xs text-slate-600 num-font">خدمة العملاء: ${appState.company.phone}</p>
-            </div>
-          </div>
-
-          <div class="text-center">
-            ${barcodeSvg}
-            <div class="font-mono font-extrabold text-base tracking-widest text-slate-950">${order.id}</div>
-          </div>
-
-          <div class="flex items-center gap-2">
-            ${qrSvg}
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 my-3">
-          <div class="border border-slate-900 rounded-lg p-2.5 bg-slate-50">
-            <div class="text-[11px] text-slate-500 font-bold">تاريخ الإصدار</div>
-            <div class="text-xs font-bold text-slate-900 num-font mt-0.5">${order.createdAt}</div>
-            <div class="text-[11px] text-slate-600 mt-1">المندوب: <span class="font-bold">${courier ? courier.name : 'يحدد عند التوزيع'}</span></div>
-          </div>
-
-          <div class="border border-slate-900 rounded-lg p-2.5 bg-slate-50 text-center flex flex-col justify-center">
-            <div class="text-[11px] text-slate-500 font-bold">منطقة التوجيه (ZONE)</div>
-            <div class="text-sm font-extrabold text-slate-950 mt-0.5">${order.recipientCity}</div>
-          </div>
-
-          <div class="border-2 border-slate-900 rounded-lg p-2.5 bg-slate-900 text-white text-center flex flex-col justify-center">
-            <div class="text-[11px] text-slate-300 font-bold">المطلوب تحصيله من المستلم (COD)</div>
-            <div class="text-xl font-extrabold num-font tracking-tight">${fin.totalCod.toLocaleString()} ج.م</div>
-            <div class="text-[10px] text-slate-300 num-font">(شامل التوصيل: ${fin.deliveryFee} ج.م)</div>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 ${appState.waybillPrintFormat === 'thermal' ? '' : ' sm:grid-cols-2'} gap-3 my-3">
-          <div class="border border-slate-900 rounded-lg p-3">
-            <div class="flex items-center justify-between border-b border-slate-300 pb-1 mb-2">
-              <span class="text-xs font-extrabold text-slate-900">بيانات الراسل (SENDER)</span>
-              <span class="text-[11px] font-semibold bg-slate-200 px-2 py-0.5 rounded">الطرف الأول</span>
-            </div>
-            <div class="space-y-1 text-xs">
-              <div><span class="font-bold text-slate-600">الاسم:</span> <span class="font-bold text-slate-950">${order.senderName}</span></div>
-              <div><span class="font-bold text-slate-600">الهاتف:</span> <span class="font-bold num-font text-slate-950">${order.senderPhone}</span></div>
-              <div><span class="font-bold text-slate-600">العنوان:</span> <span>${order.senderAddress}</span></div>
-            </div>
-          </div>
-
-          <div class="border-2 border-slate-900 rounded-lg p-3 bg-slate-50/50">
-            <div class="flex items-center justify-between border-b border-slate-300 pb-1 mb-2">
-              <span class="text-xs font-extrabold text-slate-900">بيانات المرسل إليه (RECIPIENT)</span>
-              <span class="text-[11px] font-bold bg-slate-900 text-white px-2 py-0.5 rounded">المستلم</span>
-            </div>
-            <div class="space-y-1 text-xs">
-              <div><span class="font-bold text-slate-600">الاسم:</span> <span class="font-extrabold text-sm text-slate-950">${order.recipientName}</span></div>
-              <div><span class="font-bold text-slate-600">الهاتف:</span> <span class="font-extrabold text-sm num-font text-slate-950">${order.recipientPhone}</span></div>
-              <div><span class="font-bold text-slate-600">العنوان:</span> <span class="font-semibold text-slate-950">${order.recipientCity} — ${order.recipientAddress}</span></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="border border-slate-900 rounded-lg p-3 my-3 space-y-2 text-xs">
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 border-b border-slate-200 pb-2">
-            <div><span class="text-slate-500 font-bold">عدد القطع:</span> <span class="font-extrabold num-font">${order.pieces}</span></div>
-            <div><span class="text-slate-500 font-bold">الوزن:</span> <span class="font-extrabold num-font">${order.weight} كجم</span></div>
-            <div><span class="text-slate-500 font-bold">طبيعة الشحنة:</span> <span class="font-extrabold">${order.fragile}</span></div>
-            <div><span class="text-slate-500 font-bold">المعاينة:</span> <span class="font-extrabold underline">${order.inspection}</span></div>
-          </div>
           <div>
-            <span class="text-slate-500 font-bold">وصف المحتويات:</span>
-            <span class="font-bold text-slate-950">${order.packageDesc}</span>
+            <h2 class="text-xl font-extrabold text-slate-950">${appState.company.name}</h2>
+            <p class="text-xs text-slate-600 num-font">خدمة العملاء: ${appState.company.phone}</p>
           </div>
-          ${order.notes ? `<div><span class="text-slate-500 font-bold">تعليمات وملاحظات التوصيل:</span> <span class="font-bold text-slate-900">${order.notes}</span></div>` : ''}
-        </div>
-
-        <div class="grid grid-cols-2 gap-3 pt-2 border-t border-dashed border-slate-400 text-xs">
-          <div class="border border-slate-300 rounded p-2.5">
-            <div class="font-bold text-slate-700">إقرار استلام المندوب (الموصلاتي):</div>
-            <div class="text-[11px] text-slate-500 mt-4">التوقيع: .................................</div>
-          </div>
-          <div class="border border-slate-300 rounded p-2.5">
-            <div class="font-bold text-slate-700">توقيع المستلم بالاستلام بحالة سليمة:</div>
-            <div class="text-[11px] text-slate-500 mt-4">التوقيع: .................................</div>
+          <div class="text-center">
+            ${generateBarcodeSvg(order.id)}
+            <div class="font-mono font-extrabold text-base">${order.id}</div>
           </div>
         </div>
-
-        <div class="mt-3 pt-2 border-t border-slate-200 text-[10px] text-slate-500 text-center">
-          ${appState.company.terms}
+        <div class="grid grid-cols-2 gap-3 my-3">
+          <div class="border border-slate-900 rounded p-3">
+            <span class="text-xs font-bold text-slate-500">الراسل:</span>
+            <div class="font-bold">${order.senderName} (${order.senderPhone})</div>
+            <div class="text-xs text-slate-600">${order.senderAddress}</div>
+          </div>
+          <div class="border border-slate-900 rounded p-3 bg-slate-50">
+            <span class="text-xs font-bold text-slate-500">المستلم:</span>
+            <div class="font-bold">${order.recipientName} (${order.recipientPhone})</div>
+            <div class="text-xs text-slate-600">${order.recipientCity} - ${order.recipientAddress}</div>
+          </div>
+        </div>
+        <div class="border-2 border-slate-900 rounded p-3 bg-slate-900 text-white flex justify-between items-center my-3">
+          <span class="font-bold">المطلوب تحصيله (COD):</span>
+          <span class="text-2xl font-black">${fin.totalCod.toLocaleString()} ج.م</span>
         </div>
       `;
     }
 
-    // ==================== CUSTOMER TRACKING PORTAL ====================
     function renderCustomerTrackingPortal(forcedAwb = '') {
       const pillsBox = document.getElementById('sample-awb-pills');
-      pillsBox.innerHTML = `<span class="text-slate-400">أرقام بوالص للتجربة السريعة:</span>` +
-        appState.orders.map(o => `
-          <button type="button" data-sample-awb="${o.id}" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-indigo-50 text-indigo-700 font-mono font-bold border border-slate-200 transition">
-            ${o.id}
-          </button>
-        `).join('');
+      pillsBox.innerHTML = appState.orders.map(o => `
+        <button type="button" data-sample-awb="${o.id}" class="px-2 py-1 rounded bg-slate-100 text-indigo-700 font-mono font-bold text-xs">${o.id}</button>
+      `).join('');
 
       const input = document.getElementById('track-search-input');
       const queryAwb = (forcedAwb || input.value || (appState.orders[0] && appState.orders[0].id) || '').trim().toUpperCase();
@@ -1390,245 +1106,69 @@
 
       const resultBox = document.getElementById('tracking-result-box');
       const order = appState.orders.find(o => o.id.toUpperCase() === queryAwb);
-
       if (!order) {
-        resultBox.innerHTML = `
-          <div class="bg-rose-50 border border-rose-200 rounded-xl p-6 text-center space-y-1">
-            <p class="text-sm font-bold text-rose-800">لم يتم العثور على بوليصة برقم "${queryAwb}"</p>
-            <p class="text-xs text-rose-600">تأكد من كتابة رقم البوليصة بشكل صحيح مثل BRQ-1001</p>
-          </div>
-        `;
+        resultBox.innerHTML = `<div class="p-4 bg-rose-50 text-rose-700 text-center rounded-xl text-xs font-bold">لم يتم العثور على شحنة بهذا الرقم</div>`;
         return;
       }
-
       const st = STATUS_MAP[order.status] || STATUS_MAP.CREATED;
-      const fin = computeOrderFinancials(order);
-      const courier = getCourierById(order.courierId);
-
-      const steps = [
-        { num: 1, title: 'تم إصدار البوليصة' },
-        { num: 2, title: 'تم الاستلام من الراسل' },
-        { num: 3, title: 'مع المندوب للتوصيل' },
-        { num: 4, title: order.status === 'RETURNED' ? 'مرتجع' : 'تم التسليم بنجاح' }
-      ];
-
       resultBox.innerHTML = `
-        <div class="space-y-6">
-          <div class="bg-slate-900 text-white rounded-2xl p-5 flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <div class="text-xs text-indigo-300 font-mono">رقم البوليصة: ${order.id}</div>
-              <h3 class="text-lg font-extrabold mt-0.5">المستلم: ${order.recipientName} (${order.recipientCity})</h3>
-              <p class="text-xs text-slate-300 mt-1">الراسل: ${order.senderName} • المحتويات: ${order.packageDesc}</p>
-            </div>
-            <div class="text-left">
-              <span class="inline-block px-3 py-1 rounded-full text-xs font-bold bg-indigo-500 text-white">${st.label}</span>
-              <div class="text-sm font-extrabold num-font mt-2">المطلوب عند الاستلام: ${fin.totalCod.toLocaleString()} ج.م</div>
-            </div>
+        <div class="p-4 bg-slate-900 text-white rounded-xl flex justify-between items-center">
+          <div>
+            <div class="text-xs text-indigo-300 font-mono">${order.id}</div>
+            <div class="font-bold">${order.recipientName} - ${order.recipientCity}</div>
           </div>
-
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            ${steps.map(s => {
-              const active = st.step >= s.num;
-              const isReturned = order.status === 'RETURNED' && s.num === 4;
-              const boxClass = isReturned
-                ? 'border-rose-500 bg-rose-50 text-rose-900'
-                : active
-                  ? 'border-indigo-600 bg-indigo-50/70 text-indigo-950'
-                  : 'border-slate-200 bg-slate-50 text-slate-400';
-              return `
-                <div class="border-2 rounded-xl p-3 text-center ${boxClass}">
-                  <div class="text-xs font-extrabold num-font">مرحلة ${s.num}</div>
-                  <div class="text-xs font-bold mt-1">${s.title}</div>
-                </div>
-              `;
-            }).join('')}
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-2 h-fit">
-              <h4 class="text-xs font-bold text-slate-500 uppercase">مندوب التوصيل المكلّف</h4>
-              ${
-                courier
-                  ? `<div class="text-sm font-extrabold text-slate-900">${courier.name}</div>
-                     <div class="text-xs text-slate-600">وسيلة التوصيل: ${courier.vehicle}</div>
-                     <div class="text-xs font-bold text-indigo-700 num-font">موبايل المندوب: ${courier.phone}</div>`
-                  : `<div class="text-xs text-slate-500">جاري تعيين مندوب التوصيل لمنطقتك قريباً</div>`
-              }
-            </div>
-
-            <div class="md:col-span-2 bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-3">
-              <h4 class="text-xs font-bold text-slate-700">السجل الزمني لحركات الشحنة (Tracking History)</h4>
-              <div class="space-y-3">
-                ${order.timeline.slice().reverse().map((item, idx) => {
-                  const itemSt = STATUS_MAP[item.status] || STATUS_MAP.CREATED;
-                  return `
-                    <div class="flex items-start gap-3 bg-white p-3 rounded-xl border ${idx === 0 ? 'border-indigo-300 shadow-xs' : 'border-slate-200'}">
-                      <span class="w-2.5 h-2.5 rounded-full mt-1.5 shrink-0 ${itemSt.dot}"></span>
-                      <div class="flex-1">
-                        <div class="flex flex-wrap items-center justify-between gap-2">
-                          <span class="text-xs font-extrabold text-slate-900">${itemSt.label}</span>
-                          <span class="text-[11px] text-slate-500 num-font">${item.time}</span>
-                        </div>
-                        <p class="text-xs text-slate-600 mt-1">${item.note}</p>
-                      </div>
-                    </div>
-                  `;
-                }).join('')}
-              </div>
-            </div>
-          </div>
+          <span class="px-3 py-1 bg-indigo-600 rounded-full text-xs font-bold">${st.label}</span>
         </div>
       `;
     }
 
-    // ==================== COURIERS & SETTLEMENTS TAB ====================
     function renderCouriersTab() {
       const tbody = document.getElementById('couriers-table-body');
-      tbody.innerHTML = appState.couriers.map(c => {
-        const assigned = appState.orders.filter(o => o.courierId === c.id);
-        const delivered = assigned.filter(o => o.status === 'DELIVERED');
-
-        let collectedCash = 0;
-        let courierEarned = 0;
-
-        delivered.forEach(o => {
-          const fin = computeOrderFinancials(o);
-          collectedCash += fin.totalCod;
-          courierEarned += fin.courierShare;
-        });
-
-        const netToCompany = collectedCash - courierEarned;
-
-        return `
-          <tr class="hover:bg-slate-50">
-            <td class="py-3 px-3">
-              <div class="font-bold text-slate-900">${c.name}</div>
-              <div class="text-xs text-slate-500 num-font">${c.phone}</div>
-            </td>
-            <td class="py-3 px-3">
-              <div class="text-xs font-semibold text-slate-800">${c.zone}</div>
-              <div class="text-[11px] text-slate-500">${c.vehicle}</div>
-            </td>
-            <td class="py-3 px-3 text-center num-font">
-              <span class="font-bold text-emerald-700">${delivered.length}</span> / <span>${assigned.length}</span>
-            </td>
-            <td class="py-3 px-3 font-bold num-font text-slate-900">${collectedCash.toLocaleString()} ج.م</td>
-            <td class="py-3 px-3 font-bold num-font text-emerald-700">${courierEarned.toLocaleString()} ج.م</td>
-            <td class="py-3 px-3 font-extrabold num-font text-indigo-700">${netToCompany.toLocaleString()} ج.م</td>
-          </tr>
-        `;
-      }).join('');
+      tbody.innerHTML = appState.couriers.map(c => `
+        <tr class="hover:bg-slate-50">
+          <td class="py-3 px-3 font-bold">${c.name}</td>
+          <td class="py-3 px-3 text-xs">${c.zone}</td>
+          <td class="py-3 px-3 text-center num-font">${c.phone}</td>
+          <td class="py-3 px-3 font-bold text-indigo-700">${c.vehicle}</td>
+        </tr>
+      `).join('');
     }
 
-    // ==================== STATUS UPDATE MODAL ====================
     function openStatusModal(orderId) {
       const order = appState.orders.find(o => o.id === orderId);
       if (!order) return;
-
       document.getElementById('status-modal-order-id').value = order.id;
-      document.getElementById('status-modal-awb').textContent = `${order.id} — المستلم: ${order.recipientName}`;
+      document.getElementById('status-modal-awb').textContent = `${order.id} - ${order.recipientName}`;
       document.getElementById('status-modal-select').value = order.status;
-
       const courierSel = document.getElementById('status-modal-courier');
-      courierSel.innerHTML = `
-        <option value="">-- بدون مندوب --</option>
-        ${appState.couriers.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
-      `;
+      courierSel.innerHTML = `<option value="">-- بدون مندوب --</option>` + appState.couriers.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
       courierSel.value = order.courierId || '';
-      document.getElementById('status-modal-note').value = '';
-
-      const timelineBox = document.getElementById('status-modal-timeline');
-      timelineBox.innerHTML = order.timeline.slice().reverse().map(t => {
-        const st = STATUS_MAP[t.status] || STATUS_MAP.CREATED;
-        return `
-          <div class="text-xs bg-slate-50 p-2.5 rounded-lg border border-slate-200 flex items-start justify-between gap-2">
-            <div>
-              <span class="font-bold text-slate-900">${st.label}:</span>
-              <span class="text-slate-600">${t.note}</span>
-            </div>
-            <span class="text-[10px] text-slate-400 num-font shrink-0">${t.time}</span>
-          </div>
-        `;
-      }).join('');
-
-      const modal = document.getElementById('status-modal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
+      document.getElementById('status-modal').classList.remove('hidden');
+      document.getElementById('status-modal').classList.add('flex');
     }
 
     function closeStatusModal() {
-      const modal = document.getElementById('status-modal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
+      document.getElementById('status-modal').classList.add('hidden');
+      document.getElementById('status-modal').classList.remove('flex');
     }
 
-    // ==================== EXPORT CSV ====================
-    function exportOrdersCsv() {
-      const headers = ['رقم البوليصة', 'تاريخ الإصدار', 'الراسل', 'موبايل الراسل', 'المستلم', 'موبايل المستلم', 'المنطقة', 'المندوب', 'قيمة الأوردر', 'مصاريف التوصيل', 'المطلوب تحصيله COD', 'عمولة الشركة', 'الحالة'];
-      const rows = appState.orders.map(o => {
-        const fin = computeOrderFinancials(o);
-        const courier = getCourierById(o.courierId);
-        const st = STATUS_MAP[o.status] || STATUS_MAP.CREATED;
-        return [
-          o.id,
-          o.createdAt,
-          o.senderName,
-          o.senderPhone,
-          o.recipientName,
-          o.recipientPhone,
-          o.recipientCity,
-          courier ? courier.name : 'غير معين',
-          fin.itemPrice,
-          fin.deliveryFee,
-          fin.totalCod,
-          fin.companyCommission,
-          st.label
-        ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(',');
-      });
-
-      const csvContent = '\uFEFF' + [headers.join(','), ...rows].join('\n');
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `buraq_orders_${new Date().toISOString().slice(0, 10)}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-      showToast('تم تصدير تقرير الأوردرات والحسابات بنجاح');
-    }
-
-    // ==================== EVENT LISTENERS ====================
     window.addEventListener('DOMContentLoaded', () => {
-      // مزامنة الإعدادات فورياً مع سحابة Supabase
-      loadCompanySettingsFromCloud();
+      // مزامنة فورية آمنة في الخلفية
+      setTimeout(syncCompanyFromCloud, 300);
 
-      // Top Navigation Tabs
       document.querySelectorAll('.nav-tab-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          if (btn.dataset.tab === 'new-order') {
-            document.getElementById('edit-order-id').value = '';
-          }
-          switchTab(btn.dataset.tab);
-        });
+        btn.addEventListener('click', () => switchTab(btn.dataset.tab));
       });
 
-      // Quick New Order Button
       document.getElementById('quick-new-order-btn').addEventListener('click', () => {
         document.getElementById('edit-order-id').value = '';
         switchTab('new-order');
       });
 
-      // Export CSV
-      document.getElementById('export-csv-btn').addEventListener('click', exportOrdersCsv);
-
-      // Search & Filters on Dashboard
       document.getElementById('search-orders-input').addEventListener('input', renderDashboard);
       document.getElementById('filter-status-select').addEventListener('change', renderDashboard);
       document.getElementById('filter-courier-select').addEventListener('change', renderDashboard);
 
-      // Table Action Buttons Delegation
       document.getElementById('orders-table-body').addEventListener('click', e => {
         const btn = e.target.closest('button[data-action]');
         if (!btn) return;
@@ -1644,25 +1184,18 @@
         }
       });
 
-      // Live Financial Calculation in Order Form
       ['fin-item-price', 'fin-delivery-fee', 'fin-company-pct', 'fin-payment-type'].forEach(id => {
         document.getElementById(id).addEventListener('input', updateLiveFinancialCalc);
-        document.getElementById(id).addEventListener('change', updateLiveFinancialCalc);
       });
 
-      document.getElementById('cancel-form-btn').addEventListener('click', () => {
-        document.getElementById('edit-order-id').value = '';
-        switchTab('dashboard');
-      });
+      document.getElementById('cancel-form-btn').addEventListener('click', () => switchTab('dashboard'));
 
-      // Submit Order Form (Create or Edit)
       document.getElementById('order-form').addEventListener('submit', e => {
         e.preventDefault();
         const editId = document.getElementById('edit-order-id').value;
-        const courierId = document.getElementById('assign-courier').value;
-        const courierObj = getCourierById(courierId);
-
-        const orderPayload = {
+        const newOrder = {
+          id: editId || getNextAwbId(),
+          createdAt: formatNowArabic(),
           senderName: document.getElementById('sender-name').value.trim(),
           senderPhone: document.getElementById('sender-phone').value.trim(),
           senderAddress: document.getElementById('sender-address').value.trim(),
@@ -1676,133 +1209,27 @@
           inspection: document.getElementById('package-inspection').value,
           fragile: document.getElementById('package-fragile').value,
           notes: document.getElementById('package-notes').value.trim(),
-          courierId,
+          courierId: document.getElementById('assign-courier').value,
           itemPrice: Number(document.getElementById('fin-item-price').value) || 0,
           deliveryFee: Number(document.getElementById('fin-delivery-fee').value) || 0,
           companyPct: Number(document.getElementById('fin-company-pct').value) || 0,
-          paymentType: document.getElementById('fin-payment-type').value
+          paymentType: document.getElementById('fin-payment-type').value,
+          status: 'CREATED',
+          timeline: [{ status: 'CREATED', time: formatNowArabic(), note: 'تم تسجيل الأوردر' }]
         };
 
         if (editId) {
           const idx = appState.orders.findIndex(o => o.id === editId);
-          if (idx > -1) {
-            appState.orders[idx] = { ...appState.orders[idx], ...orderPayload };
-            appState.selectedWaybillOrderId = editId;
-            saveState();
-            showToast(`تم حفظ تعديلات البوليصة ${editId}`);
-            switchTab('waybill-view');
-          }
+          if (idx > -1) appState.orders[idx] = { ...appState.orders[idx], ...newOrder };
         } else {
-          const newId = getNextAwbId();
-          const nowStr = formatNowArabic();
-          const initialStatus = courierId ? 'PICKED_UP' : 'CREATED';
-          const timeline = [
-            {
-              status: 'CREATED',
-              time: nowStr,
-              note: 'تم تسجيل الأوردر وإصدار بوليصة التوصيل'
-            }
-          ];
-          if (courierObj) {
-            timeline.push({
-              status: 'PICKED_UP',
-              time: nowStr,
-              note: `تم إسناد البوليصة للمندوب (${courierObj.name})`
-            });
-          }
-
-          const newOrder = {
-            id: newId,
-            createdAt: nowStr,
-            ...orderPayload,
-            status: initialStatus,
-            timeline
-          };
           appState.orders.unshift(newOrder);
-          appState.selectedWaybillOrderId = newId;
-          saveState();
-          showToast(`تم إصدار البوليصة رقم ${newId} بنجاح!`);
-          switchTab('waybill-view');
         }
-      });
-
-      // Waybill View Controls
-      document.getElementById('waybill-order-selector').addEventListener('change', e => {
-        appState.selectedWaybillOrderId = e.target.value;
-        renderWaybill();
-      });
-
-      document.getElementById('size-standard-btn').addEventListener('click', () => {
-        appState.waybillPrintFormat = 'standard';
-        document.getElementById('size-standard-btn').className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-900 shadow-sm transition';
-        document.getElementById('size-thermal-btn').className = 'px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition';
-        renderWaybill();
-      });
-
-      document.getElementById('size-thermal-btn').addEventListener('click', () => {
-        appState.waybillPrintFormat = 'thermal';
-        document.getElementById('size-thermal-btn').className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-900 shadow-sm transition';
-        document.getElementById('size-standard-btn').className = 'px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition';
-        renderWaybill();
-      });
-
-      document.getElementById('print-waybill-btn').addEventListener('click', () => {
-        window.print();
-      });
-
-      document.getElementById('copy-awb-btn').addEventListener('click', () => {
-        const awb = appState.selectedWaybillOrderId || '';
-        const tempInput = document.createElement('input');
-        tempInput.value = awb;
-        document.body.appendChild(tempInput);
-        tempInput.select();
-        document.execCommand('copy');
-        tempInput.remove();
-        showToast(`تم نسخ رقم البوليصة: ${awb}`);
-      });
-
-      // Customer Tracking Portal Controls
-      document.getElementById('track-search-btn').addEventListener('click', () => {
-        renderCustomerTrackingPortal(document.getElementById('track-search-input').value);
-      });
-
-      document.getElementById('track-search-input').addEventListener('keydown', e => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          renderCustomerTrackingPortal(e.target.value);
-        }
-      });
-
-      document.getElementById('sample-awb-pills').addEventListener('click', e => {
-        const btn = e.target.closest('button[data-sample-awb]');
-        if (!btn) return;
-        renderCustomerTrackingPortal(btn.dataset.sampleAwb);
-      });
-
-      // Add Courier Form
-      document.getElementById('courier-form').addEventListener('submit', e => {
-        e.preventDefault();
-        const name = document.getElementById('courier-name-input').value.trim();
-        const phone = document.getElementById('courier-phone-input').value.trim();
-        const vehicle = document.getElementById('courier-vehicle-input').value;
-        const zone = document.getElementById('courier-zone-input').value.trim();
-        if (!name || !phone) return;
-
-        const newCourier = {
-          id: `CR-${Date.now().toString().slice(-4)}`,
-          name,
-          phone,
-          vehicle,
-          zone
-        };
-        appState.couriers.push(newCourier);
+        appState.selectedWaybillOrderId = newOrder.id;
         saveState();
-        document.getElementById('courier-form').reset();
-        renderCouriersTab();
-        showToast(`تم إضافة المندوب "${name}" بنجاح`);
+        showToast(`تم حفظ البوليصة ${newOrder.id}`);
+        switchTab('waybill-view');
       });
 
-      // Status Update Modal Controls
       document.getElementById('close-status-modal-btn').addEventListener('click', closeStatusModal);
       document.getElementById('cancel-status-modal-btn').addEventListener('click', closeStatusModal);
 
@@ -1810,37 +1237,22 @@
         e.preventDefault();
         const orderId = document.getElementById('status-modal-order-id').value;
         const newStatus = document.getElementById('status-modal-select').value;
-        const newCourierId = document.getElementById('status-modal-courier').value;
-        const customNote = document.getElementById('status-modal-note').value.trim();
+        const courierId = document.getElementById('status-modal-courier').value;
+        const note = document.getElementById('status-modal-note').value.trim();
 
         const order = appState.orders.find(o => o.id === orderId);
-        if (!order) return;
-
-        order.status = newStatus;
-        order.courierId = newCourierId;
-        const courier = getCourierById(newCourierId);
-        const stLabel = (STATUS_MAP[newStatus] || STATUS_MAP.CREATED).label;
-
-        const noteText = customNote || (courier ? `تم تحديث الحالة إلى (${stLabel}) — المندوب: ${courier.name}` : `تم تحديث الحالة إلى (${stLabel})`);
-        order.timeline.push({
-          status: newStatus,
-          time: formatNowArabic(),
-          note: noteText
-        });
-
-        saveState();
-        closeStatusModal();
-        renderDashboard();
-        showToast(`تم تحديث حالة البوليصة ${order.id} إلى "${stLabel}"`);
+        if (order) {
+          order.status = newStatus;
+          order.courierId = courierId;
+          order.timeline.push({ status: newStatus, time: formatNowArabic(), note: note || 'تحديث الحالة' });
+          saveState();
+          closeStatusModal();
+          renderDashboard();
+          showToast('تم تحديث الحالة بنجاح');
+        }
       });
 
-      // Company Settings Modal
       const settingsModal = document.getElementById('settings-modal');
-      const closeSettings = () => {
-        settingsModal.classList.add('hidden');
-        settingsModal.classList.remove('flex');
-      };
-
       document.getElementById('open-settings-btn').addEventListener('click', () => {
         document.getElementById('setting-company-name').value = appState.company.name;
         document.getElementById('setting-company-phone').value = appState.company.phone;
@@ -1852,43 +1264,39 @@
         settingsModal.classList.add('flex');
       });
 
+      const closeSettings = () => {
+        settingsModal.classList.add('hidden');
+        settingsModal.classList.remove('flex');
+      };
+
       document.getElementById('close-settings-btn').addEventListener('click', closeSettings);
       document.getElementById('cancel-settings-btn').addEventListener('click', closeSettings);
 
       document.getElementById('settings-form').addEventListener('submit', async e => {
         e.preventDefault();
-        const submitBtn = document.getElementById('save-settings-submit-btn');
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'جاري الحفظ سحابياً...';
+        const btn = document.getElementById('save-settings-submit-btn');
+        btn.textContent = 'جاري الحفظ...';
 
-        const compName = document.getElementById('setting-company-name').value.trim() || 'براق للشحن | Buraq';
-        const compPhone = document.getElementById('setting-company-phone').value.trim();
-        const compEmail = document.getElementById('setting-company-email').value.trim();
-        const compAddress = document.getElementById('setting-company-address').value.trim();
-        const defaultPct = Number(document.getElementById('setting-default-pct').value) || 25;
-        const termsText = document.getElementById('setting-terms').value.trim();
+        const name = document.getElementById('setting-company-name').value.trim();
+        const phone = document.getElementById('setting-company-phone').value.trim();
+        const email = document.getElementById('setting-company-email').value.trim();
+        const address = document.getElementById('setting-company-address').value.trim();
 
-        appState.company.name = compName;
-        appState.company.phone = compPhone;
-        appState.company.email = compEmail;
-        appState.company.address = compAddress;
-        appState.company.defaultCompanyPct = defaultPct;
-        appState.company.terms = termsText;
+        appState.company.name = name;
+        appState.company.phone = phone;
+        appState.company.email = email;
+        appState.company.address = address;
         saveState();
 
-        // إرسال التحديث لجدول Supabase
-        await saveCompanySettingsToCloud(compName, compPhone, compEmail, compAddress);
+        await syncCompanyToCloud(name, phone, email, address);
 
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'حفظ الإعدادات سحابياً';
-
+        btn.textContent = 'حفظ الإعدادات سحابياً';
         closeSettings();
         renderDashboard();
-        renderWaybill();
-        showToast('تم حفظ الإعدادات سحابياً وتحديث بيانات الشركة بنجاح!');
+        showToast('تم حفظ إعدادات الشركة بنجاح!');
       });
 
-      // Initial render
+      // Initial Render
       renderDashboard();
     });
   </script>
