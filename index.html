@@ -104,7 +104,6 @@
       <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
         <h2 class="text-base font-bold text-slate-900">سجل البوالص المشتركة بين الأجهزة</h2>
         <div class="flex items-center gap-2">
-          <!-- زر تصدير إكسيل -->
           <button type="button" id="export-excel-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-2 rounded-xl shadow flex items-center gap-1.5 transition">
             <span>📊 تصدير إكسيل</span>
           </button>
@@ -262,7 +261,6 @@
   <!-- JAVASCRIPT LOGIC -->
   <script>
     const SB_BASE = "https://fokypanshgtlowdmldix.supabase.co/rest/v1";
-    // المفتاح الصحيح الذي تم تأكيده
     const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZva3lwYW5zaGd0bG93ZG1sZGl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMxMDI3MDAsImV4cCI6MjEwODY3ODcwMH0.ET3z8IaYTZCyApnrsNSNAnEAdLvQ2ZjpqdqHArPzw2c";
     
     const HEADERS = {
@@ -342,7 +340,7 @@
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "بوالص الشحن");
 
-      // ضبط اتجاه الورقة من اليمين لليسار في الإكسيل
+      // ضبط الاتجاه من اليمين لليسار في الإكسيل
       worksheet['!views'] = [{ rightToLeft: true }];
 
       const fileName = `بوالص_براق_للشحن_${new Date().toISOString().slice(0, 10)}.xlsx`;
@@ -399,7 +397,6 @@
             <h2 class="text-xl font-black">${companyInfo.name}</h2>
             <p class="text-xs text-slate-500">خدمة العملاء: ${companyInfo.phone} | التاريخ: ${order.createdAt}</p>
           </div>
-          <!-- الباركود القابل للطباعة والمسح الضوئي -->
           <div class="flex flex-col items-center">
             <svg id="waybill-barcode-svg"></svg>
           </div>
@@ -426,7 +423,6 @@
         </div>
       `;
 
-      // توليد الباركود فوراً
       try {
         JsBarcode("#waybill-barcode-svg", order.id, {
           format: "CODE128",
@@ -463,7 +459,7 @@
       loadSettingsFromCloud();
       loadOrdersFromCloud();
 
-      // تحديث دوري كل 10 ثوانٍ
+      // فحص دوري كل 10 ثوانٍ
       setInterval(loadOrdersFromCloud, 10000);
 
       document.querySelectorAll('.nav-tab-btn').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
@@ -473,7 +469,7 @@
       document.getElementById('export-excel-btn').addEventListener('click', exportOrdersToExcel);
       document.getElementById('waybill-order-selector').addEventListener('change', e => renderWaybill(e.target.value));
 
-      // نموذج حفظ البوليصة سحابياً
+      // حفظ البوليصة سحابياً
       document.getElementById('order-form').addEventListener('submit', async e => {
         e.preventDefault();
         const btn = document.getElementById('save-order-submit-btn');
