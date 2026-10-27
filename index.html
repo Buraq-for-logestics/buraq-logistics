@@ -3,18 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>براق للشحن (Buraq) | نظام إدارة بوالص التوصيل وتتبع الأوردرات والمناديب</title>
+  <title>براق للشحن (Buraq) | المنظومة اللوجستية السحابية الآمنة</title>
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  
+  <!-- مكتبة Supabase الرسمية -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- مكتبات الباركود والإكسيل -->
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
   <script>
     tailwind.config = {
       theme: {
@@ -27,6 +29,7 @@
       }
     };
   </script>
+  
   <style>
     body { font-family: 'Cairo', 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; }
     .num-font { font-family: 'Inter', 'Cairo', sans-serif; }
@@ -48,33 +51,68 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 id="header-company-name" class="text-lg font-bold tracking-tight">براق للشحن • Buraq</h1>
-            <span class="text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-2 py-0.5 rounded-full flex items-center gap-1">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> سحابي متصل
+            <span id="auth-status-badge" class="text-xs bg-slate-800 text-slate-400 border border-slate-700 px-2 py-0.5 rounded-full flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span> وضع الزائر
             </span>
           </div>
-          <p class="text-xs text-slate-400">إدارة البوالص، المناديب، وتتبع الشحنات</p>
+          <p class="text-xs text-slate-400">نظام إدارة ومزامنة بوالص الشحن السحابي</p>
         </div>
       </div>
 
+      <!-- Navigation Tabs (الأقسام الإدارية مخفية حتى يتم تسجيل الدخول) -->
       <nav class="flex items-center gap-1 bg-slate-800/90 p-1 rounded-xl border border-slate-700 overflow-x-auto">
-        <button type="button" data-tab="dashboard" class="nav-tab-btn px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-indigo-600 text-white shadow">لوحة التحكم</button>
-        <button type="button" data-tab="new-order" class="nav-tab-btn px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-300 hover:text-white hover:bg-slate-700/60">+ إصدار بوليصة</button>
-        <button type="button" data-tab="couriers" class="nav-tab-btn px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-300 hover:text-white hover:bg-slate-700/60">🛵 المناديب</button>
-        <button type="button" data-tab="waybill-view" class="nav-tab-btn px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-300 hover:text-white hover:bg-slate-700/60">طباعة ومعاينة</button>
-        <button type="button" data-tab="customer-tracking" class="nav-tab-btn px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-300 hover:text-white hover:bg-slate-700/60">تتبع الشحنة</button>
+        <button type="button" data-tab="customer-tracking" class="nav-tab-btn px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-indigo-600 text-white shadow">تتبع الشحنة</button>
+        <button type="button" data-tab="dashboard" class="nav-tab-btn staff-only hidden px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-300 hover:text-white hover:bg-slate-700/60">لوحة التحكم</button>
+        <button type="button" data-tab="new-order" class="nav-tab-btn staff-only hidden px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-300 hover:text-white hover:bg-slate-700/60">+ إصدار بوليصة</button>
+        <button type="button" data-tab="couriers" class="nav-tab-btn staff-only hidden px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-300 hover:text-white hover:bg-slate-700/60">🛵 المناديب</button>
+        <button type="button" data-tab="waybill-view" class="nav-tab-btn staff-only hidden px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-300 hover:text-white hover:bg-slate-700/60">طباعة ومعاينة</button>
       </nav>
 
-      <button type="button" id="open-settings-btn" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-2 rounded-lg flex items-center gap-1.5 transition">
-        <span>⚙️ إعدادات الشركة</span>
-      </button>
+      <!-- Auth & Settings Controls -->
+      <div class="flex items-center gap-2">
+        <button type="button" id="open-settings-btn" class="staff-only hidden text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-2 rounded-lg items-center gap-1.5 transition">
+          <span>⚙️ إعدادات الشركة</span>
+        </button>
+        <button type="button" id="auth-action-btn" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-lg font-bold transition flex items-center gap-1">
+          <span id="auth-btn-text">🔐 تسجيل الدخول</span>
+        </button>
+      </div>
     </div>
   </header>
 
   <!-- Main Content -->
   <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6">
 
-    <!-- TAB 1: DASHBOARD -->
-    <section id="tab-dashboard" class="tab-panel space-y-6">
+    <!-- TAB 1: PUBLIC TRACKING (متاح للجميع) -->
+    <section id="tab-customer-tracking" class="tab-panel space-y-6">
+      <div class="max-w-2xl mx-auto bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-6">
+        <div class="text-center space-y-2">
+          <div class="inline-flex w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 items-center justify-center text-xl font-bold mb-1">🔍</div>
+          <h2 class="text-xl font-extrabold text-slate-900">تتبع مسار شحنتك</h2>
+          <p class="text-xs text-slate-500">أدخل رقم البوليصة للاستعلام المباشر عن حالة الطرد</p>
+        </div>
+
+        <form id="public-tracking-form" class="space-y-4">
+          <div class="flex flex-col sm:flex-row gap-2">
+            <input 
+              type="text" 
+              id="track-search-input" 
+              required 
+              placeholder="مثال: BRQ-4982" 
+              class="flex-1 rounded-xl border border-slate-300 px-4 py-3 text-sm font-mono uppercase focus:ring-2 focus:ring-indigo-500 focus:outline-none" 
+            />
+            <button type="submit" id="track-search-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-3 rounded-xl shadow transition">
+              استعلام
+            </button>
+          </div>
+        </form>
+
+        <div id="tracking-result-box" class="hidden pt-4 border-t border-slate-100"></div>
+      </div>
+    </section>
+
+    <!-- TAB 2: DASHBOARD (خاص بالموظف) -->
+    <section id="tab-dashboard" class="tab-panel hidden space-y-6">
       <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
         <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex items-center justify-between">
           <div>
@@ -86,7 +124,7 @@
 
         <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex items-center justify-between">
           <div>
-            <p class="text-xs font-semibold text-slate-500">إجمالي التحصيل (COD)</p>
+            <p class="text-xs font-semibold text-slate-500">مطلوب تحصيله (COD)</p>
             <p id="kpi-total-cod" class="text-2xl font-extrabold text-slate-900 num-font mt-1">0 ج.م</p>
           </div>
           <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">💰</div>
@@ -94,7 +132,7 @@
 
         <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex items-center justify-between">
           <div>
-            <p class="text-xs font-semibold text-slate-500">عدد المناديب النشطين</p>
+            <p class="text-xs font-semibold text-slate-500">المناديب المسجلين</p>
             <p id="kpi-total-couriers" class="text-2xl font-extrabold text-slate-900 num-font mt-1">0</p>
           </div>
           <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">🛵</div>
@@ -102,21 +140,21 @@
 
         <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex items-center justify-between">
           <div>
-            <p class="text-xs font-semibold text-slate-500">حالة السحابة</p>
-            <p class="text-sm font-bold text-emerald-600 mt-1">مزامنة نشطة</p>
+            <p class="text-xs font-semibold text-slate-500">حماية البيانات</p>
+            <p class="text-sm font-bold text-emerald-600 mt-1">RLS نشط ومؤمّن</p>
           </div>
-          <div class="w-10 h-10 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center font-bold">⚡</div>
+          <div class="w-10 h-10 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center font-bold">🔒</div>
         </div>
       </div>
 
       <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
         <h2 class="text-base font-bold text-slate-900">سجل البوالص المشتركة</h2>
         <div class="flex items-center gap-2">
-          <button type="button" id="export-excel-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-2 rounded-xl shadow flex items-center gap-1.5 transition">
+          <button type="button" id="export-excel-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow flex items-center gap-1.5 transition">
             <span>📊 تصدير إكسيل</span>
           </button>
           <button type="button" id="refresh-cloud-btn" class="bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold px-3 py-2 rounded-xl transition">🔄 تحديث</button>
-          <button type="button" id="quick-new-order-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-xl shadow transition">+ إنشاء بوليصة</button>
+          <button type="button" id="quick-new-order-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-xl shadow transition">+ إصدار بوليصة</button>
         </div>
       </div>
 
@@ -127,9 +165,9 @@
               <tr>
                 <th class="py-3 px-4">رقم البوليصة</th>
                 <th class="py-3 px-4">تاريخ الإصدار</th>
-                <th class="py-3 px-4">الراسل (التاجر)</th>
+                <th class="py-3 px-4">الراسل</th>
                 <th class="py-3 px-4">المستلم والمنطقة</th>
-                <th class="py-3 px-4">المندوب المسند له</th>
+                <th class="py-3 px-4">المندوب</th>
                 <th class="py-3 px-4">مطلوب تحصيله (COD)</th>
                 <th class="py-3 px-4 text-center">إجراءات</th>
               </tr>
@@ -140,12 +178,12 @@
       </div>
     </section>
 
-    <!-- TAB 2: NEW ORDER -->
+    <!-- TAB 3: NEW ORDER (خاص بالموظف) -->
     <section id="tab-new-order" class="tab-panel hidden">
       <div class="max-w-3xl mx-auto bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
           <h2 class="text-lg font-bold">إصدار بوليصة شحن جديدة</h2>
-          <span class="text-xs font-mono bg-indigo-500/20 text-indigo-200 px-3 py-1 rounded-lg">حفظ ومزامنة سحابية</span>
+          <span class="text-xs font-mono bg-indigo-500/20 text-indigo-200 px-3 py-1 rounded-lg">حفظ سحابي مشفر</span>
         </div>
 
         <form id="order-form" class="p-6 space-y-4">
@@ -184,7 +222,7 @@
 
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">وصف محتوى الشحنة *</label>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">وصف محتوى الطرد *</label>
               <input type="text" id="package-desc" required placeholder="ملابس / إلكترونيات" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-indigo-500" />
             </div>
             <div>
@@ -192,14 +230,13 @@
               <input type="number" id="fin-item-price" required min="0" value="400" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm num-font focus:outline-indigo-500" />
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">تكلفة الشحن والتوصيل (ج.م) *</label>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">تكلفة الشحن (ج.م) *</label>
               <input type="number" id="fin-delivery-fee" required min="0" value="50" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm num-font focus:outline-indigo-500" />
             </div>
           </div>
 
-          <!-- تحديد المندوب المسند إليه -->
-          <div class="pt-2">
-            <label class="block text-xs font-semibold text-slate-700 mb-1">إسناد الشحنة لمندوب (اختياري)</label>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">إسناد الشحنة لمندوب</label>
             <select id="order-courier-select" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-indigo-500 font-bold text-slate-700">
               <option value="">-- بدون إسناد حالياً --</option>
             </select>
@@ -207,47 +244,45 @@
 
           <div class="flex justify-end gap-3 pt-3 border-t border-slate-200">
             <button type="button" id="cancel-form-btn" class="px-4 py-2 border rounded-xl text-sm font-semibold text-slate-700">إلغاء</button>
-            <button type="submit" id="save-order-submit-btn" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold shadow transition">حفظ وإصدار البوليصة فوراً</button>
+            <button type="submit" id="save-order-submit-btn" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold shadow transition">حفظ وإصدار البوليصة</button>
           </div>
         </form>
       </div>
     </section>
 
-    <!-- TAB 3: COURIERS MANAGEMENT (بيانات المناديب) -->
+    <!-- TAB 4: COURIERS (خاص بالموظف - مربوط سحابياً) -->
     <section id="tab-couriers" class="tab-panel hidden space-y-6">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- إضافة مندوب جديد -->
         <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
-          <h3 class="text-base font-bold text-slate-900 border-b pb-2">➕ إضافة مندوب جديد</h3>
+          <h3 class="text-base font-bold text-slate-900 border-b pb-2">➕ تسجيل مندوب جديد</h3>
           <form id="courier-form" class="space-y-3">
             <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">اسم المندوب بالكامل *</label>
-              <input type="text" id="courier-name" required placeholder="مثال: محمد السيد" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-indigo-500" />
+              <label class="block text-xs font-semibold text-slate-700 mb-1">اسم المندوب *</label>
+              <input type="text" id="courier-name" required placeholder="محمد السيد" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-indigo-500" />
             </div>
             <div>
               <label class="block text-xs font-semibold text-slate-700 mb-1">رقم الهاتف *</label>
               <input type="tel" id="courier-phone" required placeholder="010xxxxxxxx" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm num-font focus:outline-indigo-500" />
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">منطقة التغطية / خط السير *</label>
-              <input type="text" id="courier-zone" required placeholder="مثال: العاشر من رمضان، بلبيس" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-indigo-500" />
+              <label class="block text-xs font-semibold text-slate-700 mb-1">منطقة التغطية *</label>
+              <input type="text" id="courier-zone" required placeholder="العاشر من رمضان، بلبيس" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-indigo-500" />
             </div>
-            <button type="submit" id="save-courier-btn" class="w-full py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-sm font-bold shadow transition">حفظ المندوب في السحابة</button>
+            <button type="submit" id="save-courier-btn" class="w-full py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-sm font-bold shadow transition">حفظ في قاعدة البيانات</button>
           </form>
         </div>
 
-        <!-- قائمة المناديب الحالية -->
         <div class="md:col-span-2 bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
           <div class="flex justify-between items-center border-b pb-2">
-            <h3 class="text-base font-bold text-slate-900">🛵 قائمة المناديب المسجلين</h3>
-            <span id="courier-count-badge" class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-lg font-bold">0 مناديب</span>
+            <h3 class="text-base font-bold text-slate-900">🛵 المناديب المسجلين على السيرفر</h3>
+            <span id="courier-count-badge" class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-lg font-bold">0</span>
           </div>
           <div class="overflow-x-auto">
             <table class="w-full text-right text-sm">
               <thead class="bg-slate-50 text-slate-600 text-xs font-bold border-b">
                 <tr>
-                  <th class="py-2.5 px-3">اسم المندوب</th>
-                  <th class="py-2.5 px-3">رقم الهاتف</th>
+                  <th class="py-2.5 px-3">الاسم</th>
+                  <th class="py-2.5 px-3">الهاتف</th>
                   <th class="py-2.5 px-3">منطقة التغطية</th>
                   <th class="py-2.5 px-3 text-center">إجراءات</th>
                 </tr>
@@ -259,7 +294,7 @@
       </div>
     </section>
 
-    <!-- TAB 4: WAYBILL VIEW WITH BARCODE -->
+    <!-- TAB 5: PRINTABLE WAYBILL (خاص بالموظف) -->
     <section id="tab-waybill-view" class="tab-panel hidden space-y-4">
       <div class="flex justify-between items-center bg-white p-4 rounded-2xl border border-slate-200 shadow-sm no-print">
         <div class="flex items-center gap-2">
@@ -267,7 +302,7 @@
           <select id="waybill-order-selector" class="rounded-xl border border-slate-300 px-3 py-2 text-sm font-bold"></select>
         </div>
         <button type="button" onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-xl text-sm font-bold shadow flex items-center gap-1.5 transition">
-          <span>🖨️ طباعة البوليصة</span>
+          <span>🖨️ طباعة البوليصة الرسمية</span>
         </button>
       </div>
       <div class="flex justify-center">
@@ -275,22 +310,34 @@
       </div>
     </section>
 
-    <!-- TAB 5: TRACKING -->
-    <section id="tab-customer-tracking" class="tab-panel hidden space-y-6">
-      <div class="max-w-2xl mx-auto bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
-        <h2 class="text-xl font-extrabold text-center text-slate-900">تتبع مسار شحنتك</h2>
-        <div class="flex gap-2">
-          <input type="text" id="track-search-input" placeholder="أدخل رقم البوليصة مثل BRQ-1001" class="flex-1 rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-mono focus:outline-indigo-500" />
-          <button type="button" id="track-search-btn" class="bg-indigo-600 text-white font-bold px-6 py-2.5 rounded-xl">تتبع</button>
-        </div>
-        <div id="tracking-result-box" class="pt-4 border-t border-slate-200"></div>
-      </div>
-    </section>
-
   </main>
 
-  <!-- MODAL: SETTINGS -->
-  <div id="settings-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-40 hidden items-center justify-center p-4 no-print">
+  <!-- AUTH MODAL (تسجيل دخول الموظف) -->
+  <div id="auth-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4 no-print">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+        <h3 class="text-base font-bold text-slate-900">تسجيل دخول طاقم العمل</h3>
+        <button type="button" id="close-auth-modal-btn" class="text-slate-400 hover:text-slate-700 text-sm font-bold">✕</button>
+      </div>
+      <form id="auth-login-form" class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">البريد الإلكتروني</label>
+          <input type="email" id="auth-email" required class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-indigo-500" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">كلمة المرور</label>
+          <input type="password" id="auth-password" required class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-indigo-500" />
+        </div>
+        <div id="auth-error-msg" class="hidden text-xs text-rose-600 bg-rose-50 p-2.5 rounded-lg border border-rose-200"></div>
+        <button type="submit" id="auth-submit-btn" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold shadow transition">
+          دخول
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- COMPANY SETTINGS MODAL -->
+  <div id="settings-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4 no-print">
     <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200 space-y-4">
       <div class="flex items-center justify-between border-b border-slate-200 pb-3">
         <h3 class="text-base font-bold text-slate-900">إعدادات بيانات الشركة السحابية</h3>
@@ -302,7 +349,7 @@
           <input type="text" id="setting-company-name" required class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-indigo-500" />
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">رقم خدمة العملاء</label>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">هاتف خدمة العملاء</label>
           <input type="text" id="setting-company-phone" required class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm num-font focus:outline-indigo-500" />
         </div>
         <div>
@@ -310,12 +357,12 @@
           <input type="email" id="setting-company-email" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-indigo-500" />
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">مقر الشركة</label>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">المقر الرئيسي</label>
           <input type="text" id="setting-company-address" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-indigo-500" />
         </div>
         <div class="flex justify-end gap-2 pt-2">
           <button type="button" id="cancel-settings-btn" class="px-4 py-2 border rounded-xl text-xs font-semibold text-slate-700">إلغاء</button>
-          <button type="submit" id="save-settings-submit-btn" class="px-5 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold">حفظ سحابياً</button>
+          <button type="submit" id="save-settings-submit-btn" class="px-5 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold">حفظ التغييرات</button>
         </div>
       </form>
     </div>
@@ -323,18 +370,16 @@
 
   <!-- JAVASCRIPT LOGIC -->
   <script>
-    const SB_BASE = "https://fokypanshgtlowdmldix.supabase.co/rest/v1";
-    const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZva3lwYW5zaGd0bG93ZG1sZGl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMxMDI3MDAsImV4cCI6MjEwODY3ODcwMH0.ET3z8IaYTZCyApnrsNSNAnEAdLvQ2ZjpqdqHArPzw2c";
-    
-    const HEADERS = {
-      "apikey": SB_KEY,
-      "Authorization": `Bearer ${SB_KEY}`,
-      "Content-Type": "application/json",
-      "Prefer": "return=representation"
-    };
+    'use strict';
 
+    const SUPABASE_URL = "https://fokypanshgtlowdmldix.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZva3lwYW5zaGd0bG93ZG1sZGl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMxMDI3MDAsImV4cCI6MjEwODY3ODcwMH0.ET3z8IaYTZCyApnrsNSNAnEAdLvQ2ZjpqdqHArPzw2c";
+
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let currentUser = null;
     let cloudOrders = [];
-    let couriersList = [];
+    let cloudCouriers = [];
     let companyInfo = {
       name: "براق للشحن • Buraq",
       phone: "19988",
@@ -342,175 +387,384 @@
       address: "العاشر من رمضان"
     };
 
-    // جلب الإعدادات من السحابة
-    async function loadSettingsFromCloud() {
-      try {
-        const res = await fetch(`${SB_BASE}/settings?select=*&limit=1`, { headers: HEADERS });
-        if (res.ok) {
-          const list = await res.json();
-          if (list && list.length > 0) {
-            const row = list[0];
-            if (row['Company_ Name']) companyInfo.name = row['Company_ Name'];
-            if (row.Phone) companyInfo.phone = row.Phone;
-            if (row.Email) companyInfo.email = row.Email;
-            if (row.Address) companyInfo.address = row.Address;
-            document.getElementById('header-company-name').textContent = companyInfo.name;
-          }
-        }
-      } catch (e) {}
+    function escapeHTML(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
     }
 
-    // جلب المناديب من السحابة (تخزن في جدول settings أو محلياً)
-    async function loadCouriers() {
-      try {
-        const local = localStorage.getItem('buraq_couriers');
-        if (local) couriersList = JSON.parse(local);
-        renderCouriers();
-        updateCourierSelectOptions();
-      } catch (e) {}
+    // إدارة الجلسة وتسجيل الدخول
+    async function initAuth() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      handleSessionState(session);
+
+      supabaseClient.auth.onAuthStateChange((_event, session) => {
+        handleSessionState(session);
+      });
     }
 
-    function saveCouriersLocally() {
-      localStorage.setItem('buraq_couriers', JSON.stringify(couriersList));
-      renderCouriers();
-      updateCourierSelectOptions();
-    }
+    function handleSessionState(session) {
+      currentUser = session ? session.user : null;
+      const staffEls = document.querySelectorAll('.staff-only');
+      const badge = document.getElementById('auth-status-badge');
+      const authBtnText = document.getElementById('auth-btn-text');
 
-    function renderCouriers() {
-      const tbody = document.getElementById('couriers-table-body');
-      document.getElementById('courier-count-badge').textContent = `${couriersList.length} مناديب`;
-      document.getElementById('kpi-total-couriers').textContent = couriersList.length;
-
-      if (couriersList.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-slate-400">لا يوجد مناديب مسجلين حالياً. أضف مندوباً من النموذج جانباً.</td></tr>`;
-        return;
+      if (currentUser) {
+        badge.className = "text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-2 py-0.5 rounded-full flex items-center gap-1";
+        badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> موظف مسجل';
+        authBtnText.textContent = "🚪 خروج";
+        staffEls.forEach(el => el.classList.remove('hidden'));
+        loadStaffData();
+      } else {
+        badge.className = "text-xs bg-slate-800 text-slate-400 border border-slate-700 px-2 py-0.5 rounded-full flex items-center gap-1";
+        badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span> وضع الزائر';
+        authBtnText.textContent = "🔐 تسجيل الدخول";
+        staffEls.forEach(el => el.classList.add('hidden'));
+        cloudOrders = [];
+        cloudCouriers = [];
+        renderDashboard();
+        switchTab('customer-tracking');
       }
-
-      tbody.innerHTML = couriersList.map((c, i) => `
-        <tr class="hover:bg-slate-50">
-          <td class="py-2.5 px-3 font-bold text-slate-800">${c.name}</td>
-          <td class="py-2.5 px-3 num-font text-slate-600">${c.phone}</td>
-          <td class="py-2.5 px-3 text-slate-600">${c.zone}</td>
-          <td class="py-2.5 px-3 text-center">
-            <button onclick="deleteCourier(${i})" class="text-rose-600 hover:text-rose-800 text-xs font-bold px-2 py-1 bg-rose-50 rounded-lg">حذف</button>
-          </td>
-        </tr>
-      `).join('');
     }
 
-    window.deleteCourier = function(index) {
-      if (confirm('هل أنت متأكد من حذف هذا المندوب؟')) {
-        couriersList.splice(index, 1);
-        saveCouriersLocally();
-      }
-    };
-
-    function updateCourierSelectOptions() {
-      const sel = document.getElementById('order-courier-select');
-      sel.innerHTML = `<option value="">-- بدون إسناد حالياً --</option>` +
-        couriersList.map(c => `<option value="${c.name} (${c.phone})">${c.name} - ${c.zone}</option>`).join('');
-    }
-
-    // جلب البوالص من السحابة
-    async function loadOrdersFromCloud() {
-      try {
-        const res = await fetch(`${SB_BASE}/orders?select=*&order=id.desc`, { headers: HEADERS });
-        if (res.ok) {
-          const rows = await res.json();
-          cloudOrders = rows.map(r => r.data).filter(Boolean);
-          renderDashboard();
-          populateWaybillSelector();
-          renderWaybill();
+    document.getElementById('auth-action-btn').addEventListener('click', () => {
+      if (currentUser) {
+        if (confirm("هل ترغب في تسجيل الخروج؟")) {
+          supabaseClient.auth.signOut();
         }
+      } else {
+        document.getElementById('auth-modal').classList.remove('hidden');
+        document.getElementById('auth-modal').classList.add('flex');
+      }
+    });
+
+    document.getElementById('close-auth-modal-btn').addEventListener('click', () => {
+      document.getElementById('auth-modal').classList.add('hidden');
+      document.getElementById('auth-modal').classList.remove('flex');
+    });
+
+    document.getElementById('auth-login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('auth-email').value.trim();
+      const password = document.getElementById('auth-password').value;
+      const errBox = document.getElementById('auth-error-msg');
+      const submitBtn = document.getElementById('auth-submit-btn');
+
+      errBox.classList.add('hidden');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'جاري التحقق...';
+
+      try {
+        const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        document.getElementById('auth-modal').classList.add('hidden');
+        document.getElementById('auth-modal').classList.remove('flex');
+        document.getElementById('auth-login-form').reset();
+        switchTab('dashboard');
+      } catch (err) {
+        errBox.textContent = 'بيانات الدخول غير صحيحة، يرجى المحاولة ثانية.';
+        errBox.classList.remove('hidden');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'دخول';
+      }
+    });
+
+    // جلب الإعدادات العامة (متاحة للجميع)
+    async function loadPublicSettings() {
+      try {
+        const { data, error } = await supabaseClient
+          .from('settings')
+          .select('*')
+          .limit(1);
+
+        if (!error && data && data.length > 0) {
+          const row = data[0];
+          if (row['Company_ Name']) companyInfo.name = row['Company_ Name'];
+          if (row.Phone) companyInfo.phone = row.Phone;
+          if (row.Email) companyInfo.email = row.Email;
+          if (row.Address) companyInfo.address = row.Address;
+          document.getElementById('header-company-name').textContent = companyInfo.name;
+        }
+      } catch (err) {}
+    }
+
+    // جلب بيانات الموظف المصرح (بوالص ومناديب)
+    async function loadStaffData() {
+      if (!currentUser) return;
+      await Promise.all([loadOrders(), loadCouriers()]);
+    }
+
+    async function loadOrders() {
+      if (!currentUser) return;
+      try {
+        const { data, error } = await supabaseClient
+          .from('orders')
+          .select('*')
+          .order('id', { ascending: false });
+
+        if (error) throw error;
+        cloudOrders = (data || []).map(r => r.data).filter(Boolean);
+        renderDashboard();
+        populateWaybillSelector();
+        renderWaybill();
       } catch (err) {
         console.error("خطأ في جلب البوالص:", err);
       }
     }
 
-    // تصدير الشحنات إلى ملف إكسيل Excel
-    function exportOrdersToExcel() {
-      if (cloudOrders.length === 0) {
-        alert("لا توجد بوالص مسجلة حالياً لتصديرها.");
-        return;
+    async function loadCouriers() {
+      if (!currentUser) return;
+      try {
+        const { data, error } = await supabaseClient
+          .from('couriers')
+          .select('*')
+          .eq('is_active', true)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        cloudCouriers = data || [];
+        renderCouriers();
+        updateCourierSelectOptions();
+      } catch (err) {
+        console.error("خطأ في جلب المناديب:", err);
       }
-
-      const excelData = cloudOrders.map((o, idx) => ({
-        "م": idx + 1,
-        "رقم البوليصة": o.id,
-        "تاريخ الإصدار": o.createdAt,
-        "اسم الراسل (التاجر)": o.senderName,
-        "هاتف الراسل": o.senderPhone,
-        "اسم المستلم": o.recipientName,
-        "هاتف المستلم": o.recipientPhone,
-        "المدينة / المنطقة": o.recipientCity,
-        "العنوان بالتفصيل": o.recipientAddress,
-        "المندوب المسند له": o.courierInfo || 'غير محدد',
-        "وصف الشحنة": o.packageDesc,
-        "سعر البضاعة (ج.م)": Number(o.itemPrice || 0),
-        "تكلفة الشحن (ج.م)": Number(o.deliveryFee || 0),
-        "إجمالي التحصيل COD (ج.م)": Number(o.itemPrice || 0) + Number(o.deliveryFee || 0),
-        "الحالة": o.status || 'مسجلة'
-      }));
-
-      const worksheet = XLSX.utils.json_to_sheet(excelData);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "بوالص الشحن");
-      worksheet['!views'] = [{ rightToLeft: true }];
-
-      const fileName = `بوالص_براق_للشحن_${new Date().toISOString().slice(0, 10)}.xlsx`;
-      XLSX.writeFile(workbook, fileName);
     }
 
+    // تتبع الشحنة الآمن للجمهور
+    document.getElementById('public-tracking-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const query = document.getElementById('track-search-input').value.trim();
+      const resultBox = document.getElementById('tracking-result-box');
+      const submitBtn = document.getElementById('track-search-btn');
+
+      resultBox.classList.add('hidden');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'جاري البحث...';
+
+      try {
+        const { data, error } = await supabaseClient.rpc('track_shipment', {
+          p_awb_id: query
+        });
+
+        if (error) throw error;
+        resultBox.classList.remove('hidden');
+
+        if (!data || !data.found) {
+          resultBox.innerHTML = `
+            <div class="p-4 bg-rose-50 text-rose-700 font-bold text-center rounded-xl text-xs border border-rose-200">
+              ${escapeHTML(data?.message || 'لم يتم العثور على بوليصة مسجلة بهذا الرقم.')}
+            </div>
+          `;
+          return;
+        }
+
+        resultBox.innerHTML = `
+          <div class="bg-slate-900 text-white p-5 rounded-2xl shadow space-y-3">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+              <div>
+                <span class="text-xs text-indigo-400 font-mono font-bold">${escapeHTML(data.awb_id)}</span>
+                <p class="text-sm font-bold mt-0.5">الوجهة: ${escapeHTML(data.recipient_city)}</p>
+              </div>
+              <span class="px-3 py-1 bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 rounded-full text-xs font-bold">
+                ${escapeHTML(data.status)}
+              </span>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-xs text-slate-300 pt-1">
+              <div><span class="text-slate-500">محتوى الطرد:</span> ${escapeHTML(data.package_desc)}</div>
+              <div><span class="text-slate-500">تاريخ المعالجة:</span> ${new Date(data.created_at).toLocaleDateString('ar-EG')}</div>
+            </div>
+          </div>
+        `;
+      } catch (err) {
+        resultBox.classList.remove('hidden');
+        resultBox.innerHTML = `
+          <div class="p-4 bg-rose-50 text-rose-700 font-bold text-center rounded-xl text-xs border border-rose-200">
+            تعذر الاستعلام حالياً، يرجى المحاولة لاحقاً.
+          </div>
+        `;
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'استعلام';
+      }
+    });
+
+    // لوحة التحكم
     function renderDashboard() {
       const tbody = document.getElementById('orders-table-body');
       document.getElementById('kpi-total-orders').textContent = cloudOrders.length;
+      document.getElementById('kpi-total-couriers').textContent = cloudCouriers.length;
       
       let totalCod = 0;
       cloudOrders.forEach(o => totalCod += (Number(o.itemPrice || 0) + Number(o.deliveryFee || 0)));
       document.getElementById('kpi-total-cod').textContent = `${totalCod.toLocaleString()} ج.م`;
 
       if (cloudOrders.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-400">لا توجد بوالص مسجلة حتى الآن. اضغط "+ إصدار بوليصة" لإضافة أول أوردر.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-400">لا توجد بوالص شحن مسجلة حتى الآن.</td></tr>`;
         return;
       }
 
       tbody.innerHTML = cloudOrders.map(o => `
         <tr class="hover:bg-slate-50">
-          <td class="py-3 px-4 font-mono font-bold text-indigo-700">${o.id}</td>
-          <td class="py-3 px-4 text-xs text-slate-500">${o.createdAt}</td>
-          <td class="py-3 px-4 font-bold text-slate-800">${o.senderName}<div class="text-xs text-slate-400 num-font">${o.senderPhone}</div></td>
-          <td class="py-3 px-4 font-bold text-slate-800">${o.recipientName}<div class="text-xs text-slate-400">${o.recipientCity}</div></td>
-          <td class="py-3 px-4 text-xs font-semibold text-amber-700">${o.courierInfo || '<span class="text-slate-400">غير مسند</span>'}</td>
+          <td class="py-3 px-4 font-mono font-bold text-indigo-700">${escapeHTML(o.id)}</td>
+          <td class="py-3 px-4 text-xs text-slate-500">${escapeHTML(o.createdAt)}</td>
+          <td class="py-3 px-4 font-bold text-slate-800">${escapeHTML(o.senderName)}<div class="text-xs text-slate-400 num-font">${escapeHTML(o.senderPhone)}</div></td>
+          <td class="py-3 px-4 font-bold text-slate-800">${escapeHTML(o.recipientName)}<div class="text-xs text-slate-400">${escapeHTML(o.recipientCity)}</div></td>
+          <td class="py-3 px-4 text-xs font-semibold text-amber-700">${escapeHTML(o.courierInfo || 'غير مسند')}</td>
           <td class="py-3 px-4 font-extrabold text-slate-900 num-font">${(Number(o.itemPrice) + Number(o.deliveryFee)).toLocaleString()} ج.م</td>
           <td class="py-3 px-4 text-center">
-            <button type="button" onclick="openWaybillView('${o.id}')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-lg text-xs font-bold border border-indigo-200 transition">عرض وطباعة</button>
+            <button type="button" onclick="openWaybillView('${escapeHTML(o.id)}')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-lg text-xs font-bold border border-indigo-200 transition">عرض وطباعة</button>
           </td>
         </tr>
       `).join('');
     }
 
+    // المناديب
+    function renderCouriers() {
+      const tbody = document.getElementById('couriers-table-body');
+      document.getElementById('courier-count-badge').textContent = `${cloudCouriers.length}`;
+
+      if (cloudCouriers.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-slate-400">لا يوجد مناديب مسجلين حالياً.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = cloudCouriers.map(c => `
+        <tr class="hover:bg-slate-50">
+          <td class="py-2.5 px-3 font-bold text-slate-800">${escapeHTML(c.name)}</td>
+          <td class="py-2.5 px-3 num-font text-slate-600">${escapeHTML(c.phone)}</td>
+          <td class="py-2.5 px-3 text-slate-600">${escapeHTML(c.zone)}</td>
+          <td class="py-2.5 px-3 text-center">
+            <button onclick="deactivateCourier('${escapeHTML(c.id)}')" class="text-rose-600 hover:text-rose-800 text-xs font-bold px-2 py-1 bg-rose-50 rounded-lg">إلغاء تفعيل</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function updateCourierSelectOptions() {
+      const sel = document.getElementById('order-courier-select');
+      sel.innerHTML = `<option value="">-- بدون إسناد حالياً --</option>` +
+        cloudCouriers.map(c => `<option value="${escapeHTML(c.name)} (${escapeHTML(c.phone)})">${escapeHTML(c.name)} - ${escapeHTML(c.zone)}</option>`).join('');
+    }
+
+    window.deactivateCourier = async function(id) {
+      if (!confirm('هل أنت متأكد من إلغاء تفعيل هذا المندوب؟')) return;
+      try {
+        const { error } = await supabaseClient
+          .from('couriers')
+          .update({ is_active: false })
+          .eq('id', id);
+
+        if (error) throw error;
+        await loadCouriers();
+      } catch (err) {
+        alert('فشل في إزالة المندوب: ' + err.message);
+      }
+    };
+
+    document.getElementById('courier-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!currentUser) return;
+
+      const name = document.getElementById('courier-name').value.trim();
+      const phone = document.getElementById('courier-phone').value.trim();
+      const zone = document.getElementById('courier-zone').value.trim();
+      const btn = document.getElementById('save-courier-btn');
+
+      btn.disabled = true;
+      try {
+        const { error } = await supabaseClient
+          .from('couriers')
+          .insert([{ name, phone, zone, is_active: true }]);
+
+        if (error) throw error;
+        document.getElementById('courier-form').reset();
+        await loadCouriers();
+        alert('تم تسجيل المندوب بنجاح في قاعدة البيانات.');
+      } catch (err) {
+        alert('فشل حفظ المندوب: ' + err.message);
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    // إنشاء البوليصة
+    document.getElementById('order-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!currentUser) return;
+
+      const btn = document.getElementById('save-order-submit-btn');
+      btn.disabled = true;
+      btn.textContent = 'جاري الحفظ بالسحابة...';
+
+      const randSuffix = Math.floor(1000 + Math.random() * 9000);
+      const newAwbId = `BRQ-${randSuffix}`;
+      const courierVal = document.getElementById('order-courier-select').value;
+
+      const orderData = {
+        id: newAwbId,
+        createdAt: new Date().toLocaleString('ar-EG'),
+        senderName: document.getElementById('sender-name').value.trim(),
+        senderPhone: document.getElementById('sender-phone').value.trim(),
+        recipientName: document.getElementById('recipient-name').value.trim(),
+        recipientPhone: document.getElementById('recipient-phone').value.trim(),
+        recipientCity: document.getElementById('recipient-city').value.trim(),
+        recipientAddress: document.getElementById('recipient-address').value.trim(),
+        courierInfo: courierVal || 'غير مسند',
+        packageDesc: document.getElementById('package-desc').value.trim(),
+        itemPrice: Number(document.getElementById('fin-item-price').value) || 0,
+        deliveryFee: Number(document.getElementById('fin-delivery-fee').value) || 0,
+        status: 'قيد المعالجة'
+      };
+
+      try {
+        const { error } = await supabaseClient
+          .from('orders')
+          .insert([{ awb_id: newAwbId, data: orderData }]);
+
+        if (error) throw error;
+        alert(`تم إصدار وحفظ البوليصة (${newAwbId}) بنجاح.`);
+        document.getElementById('order-form').reset();
+        await loadOrders();
+        openWaybillView(newAwbId);
+      } catch (err) {
+        alert('تعذر حفظ البوليصة: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'حفظ وإصدار البوليصة';
+      }
+    });
+
+    // طباعة البوليصة والباركود
     function populateWaybillSelector() {
       const sel = document.getElementById('waybill-order-selector');
       if (cloudOrders.length === 0) {
         sel.innerHTML = `<option>لا توجد شحنات</option>`;
         return;
       }
-      sel.innerHTML = cloudOrders.map(o => `<option value="${o.id}">${o.id} - ${o.recipientName}</option>`).join('');
+      sel.innerHTML = cloudOrders.map(o => `<option value="${escapeHTML(o.id)}">${escapeHTML(o.id)} - ${escapeHTML(o.recipientName)}</option>`).join('');
     }
 
     function renderWaybill(selectedId) {
       const area = document.getElementById('printable-waybill-area');
       const order = cloudOrders.find(o => o.id === (selectedId || document.getElementById('waybill-order-selector').value)) || cloudOrders[0];
+
       if (!order) {
         area.innerHTML = `<p class="text-center text-slate-400 py-6">لا توجد بوليصة لعرضها</p>`;
         return;
       }
+
       const total = Number(order.itemPrice || 0) + Number(order.deliveryFee || 0);
+
       area.innerHTML = `
         <div class="border-b-2 border-slate-900 pb-3 flex justify-between items-center">
           <div>
-            <h2 class="text-xl font-black">${companyInfo.name}</h2>
-            <p class="text-xs text-slate-500">خدمة العملاء: ${companyInfo.phone} | التاريخ: ${order.createdAt}</p>
+            <h2 class="text-xl font-black">${escapeHTML(companyInfo.name)}</h2>
+            <p class="text-xs text-slate-500">خدمة العملاء: ${escapeHTML(companyInfo.phone)} | التاريخ: ${escapeHTML(order.createdAt)}</p>
           </div>
           <div class="flex flex-col items-center">
             <svg id="waybill-barcode-svg"></svg>
@@ -519,22 +773,22 @@
         <div class="grid grid-cols-2 gap-4 my-4">
           <div class="border p-3 rounded-lg bg-slate-50">
             <span class="text-xs font-bold text-slate-400">بيانات الراسل:</span>
-            <div class="font-bold">${order.senderName}</div>
-            <div class="text-xs num-font">${order.senderPhone}</div>
+            <div class="font-bold">${escapeHTML(order.senderName)}</div>
+            <div class="text-xs num-font">${escapeHTML(order.senderPhone)}</div>
           </div>
           <div class="border p-3 rounded-lg bg-slate-50">
             <span class="text-xs font-bold text-slate-400">بيانات المستلم:</span>
-            <div class="font-bold">${order.recipientName}</div>
-            <div class="text-xs">${order.recipientCity} - ${order.recipientAddress}</div>
-            <div class="text-xs font-bold num-font">${order.recipientPhone}</div>
+            <div class="font-bold">${escapeHTML(order.recipientName)}</div>
+            <div class="text-xs">${escapeHTML(order.recipientCity)} - ${escapeHTML(order.recipientAddress)}</div>
+            <div class="text-xs font-bold num-font">${escapeHTML(order.recipientPhone)}</div>
           </div>
         </div>
         <div class="grid grid-cols-2 gap-4 my-2">
           <div class="border border-slate-200 p-2.5 rounded-lg text-xs">
-            <span class="font-bold text-slate-700">محتويات الشحنة:</span> ${order.packageDesc}
+            <span class="font-bold text-slate-700">محتويات الطرد:</span> ${escapeHTML(order.packageDesc)}
           </div>
           <div class="border border-slate-200 p-2.5 rounded-lg text-xs bg-amber-50/50">
-            <span class="font-bold text-amber-800">المندوب المسؤول:</span> ${order.courierInfo || 'لم يُحدد بعد'}
+            <span class="font-bold text-amber-800">المندوب المسند:</span> ${escapeHTML(order.courierInfo || 'غير مسند')}
           </div>
         </div>
         <div class="border-2 border-slate-900 bg-slate-900 text-white p-3 rounded-lg flex justify-between items-center mt-3">
@@ -553,174 +807,136 @@
           fontSize: 12,
           margin: 0
         });
-      } catch (e) {
-        console.error("خطأ في رسم الباركود:", e);
-      }
+      } catch (e) {}
     }
 
-    function openWaybillView(id) {
+    window.openWaybillView = function(id) {
       document.getElementById('waybill-order-selector').value = id;
       renderWaybill(id);
       switchTab('waybill-view');
-    }
+    };
 
+    // تصدير إكسيل
+    document.getElementById('export-excel-btn').addEventListener('click', () => {
+      if (cloudOrders.length === 0) {
+        alert("لا توجد بيانات مسجلة للتصدير.");
+        return;
+      }
+
+      const excelData = cloudOrders.map((o, idx) => ({
+        "م": idx + 1,
+        "رقم البوليصة": o.id,
+        "تاريخ الإصدار": o.createdAt,
+        "الراسل": o.senderName,
+        "هاتف الراسل": o.senderPhone,
+        "المستلم": o.recipientName,
+        "هاتف المستلم": o.recipientPhone,
+        "المحافظة/المدينة": o.recipientCity,
+        "العنوان": o.recipientAddress,
+        "المندوب المسند": o.courierInfo || 'غير مسند',
+        "وصف الشحنة": o.packageDesc,
+        "سعر البضاعة": Number(o.itemPrice || 0),
+        "تكلفة الشحن": Number(o.deliveryFee || 0),
+        "إجمالي COD": Number(o.itemPrice || 0) + Number(o.deliveryFee || 0),
+        "حالة الشحنة": o.status || 'مسجلة'
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(excelData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "بوالص الشحن");
+      worksheet['!views'] = [{ rightToLeft: true }];
+
+      const fileName = `بوالص_براق_${new Date().toISOString().slice(0, 10)}.xlsx`;
+      XLSX.writeFile(workbook, fileName);
+    });
+
+    // إعدادات الشركة
+    const settingsModal = document.getElementById('settings-modal');
+    document.getElementById('open-settings-btn').addEventListener('click', () => {
+      document.getElementById('setting-company-name').value = companyInfo.name;
+      document.getElementById('setting-company-phone').value = companyInfo.phone;
+      document.getElementById('setting-company-email').value = companyInfo.email || '';
+      document.getElementById('setting-company-address').value = companyInfo.address || '';
+      settingsModal.classList.remove('hidden');
+      settingsModal.classList.add('flex');
+    });
+
+    const closeSettings = () => {
+      settingsModal.classList.add('hidden');
+      settingsModal.classList.remove('flex');
+    };
+    document.getElementById('close-settings-btn').addEventListener('click', closeSettings);
+    document.getElementById('cancel-settings-btn').addEventListener('click', closeSettings);
+
+    document.getElementById('settings-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('save-settings-submit-btn');
+      btn.disabled = true;
+
+      const name = document.getElementById('setting-company-name').value.trim();
+      const phone = document.getElementById('setting-company-phone').value.trim();
+      const email = document.getElementById('setting-company-email').value.trim();
+      const address = document.getElementById('setting-company-address').value.trim();
+
+      try {
+        const { error } = await supabaseClient
+          .from('settings')
+          .update({
+            "Company_ Name": name,
+            "Phone": phone,
+            "Email": email,
+            "Address": address
+          })
+          .neq('id', '00000000-0000-0000-0000-000000000000');
+
+        if (error) throw error;
+        companyInfo = { name, phone, email, address };
+        document.getElementById('header-company-name').textContent = name;
+        closeSettings();
+        alert('تم تحديث إعدادات الشركة بنجاح.');
+      } catch (err) {
+        alert('فشل تحديث الإعدادات: ' + err.message);
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    // التنقل بين الأقسام
     function switchTab(tabId) {
+      if (tabId !== 'customer-tracking' && !currentUser) {
+        document.getElementById('auth-modal').classList.remove('hidden');
+        document.getElementById('auth-modal').classList.add('flex');
+        return;
+      }
+
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
-      document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+      const activePanel = document.getElementById(`tab-${tabId}`);
+      if (activePanel) activePanel.classList.remove('hidden');
+
       document.querySelectorAll('.nav-tab-btn').forEach(btn => {
         btn.className = btn.dataset.tab === tabId
-          ? 'nav-tab-btn px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-indigo-600 text-white shadow'
-          : 'nav-tab-btn px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-300 hover:text-white hover:bg-slate-700/60';
+          ? 'nav-tab-btn px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-indigo-600 text-white shadow'
+          : 'nav-tab-btn px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-300 hover:text-white hover:bg-slate-700/60';
       });
-      if (tabId === 'dashboard') loadOrdersFromCloud();
+
+      if (tabId === 'dashboard') loadOrders();
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
-      loadSettingsFromCloud();
-      loadCouriers();
-      loadOrdersFromCloud();
+    document.querySelectorAll('.nav-tab-btn').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
+    document.getElementById('quick-new-order-btn').addEventListener('click', () => switchTab('new-order'));
+    document.getElementById('cancel-form-btn').addEventListener('click', () => switchTab('dashboard'));
+    document.getElementById('refresh-cloud-btn').addEventListener('click', loadOrders);
+    document.getElementById('waybill-order-selector').addEventListener('change', e => renderWaybill(e.target.value));
 
-      // تحديث تلقائي كل 10 ثوانٍ
-      setInterval(loadOrdersFromCloud, 10000);
+    window.addEventListener('DOMContentLoaded', async () => {
+      await loadPublicSettings();
+      await initAuth();
 
-      document.querySelectorAll('.nav-tab-btn').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
-      document.getElementById('quick-new-order-btn').addEventListener('click', () => switchTab('new-order'));
-      document.getElementById('cancel-form-btn').addEventListener('click', () => switchTab('dashboard'));
-      document.getElementById('refresh-cloud-btn').addEventListener('click', loadOrdersFromCloud);
-      document.getElementById('export-excel-btn').addEventListener('click', exportOrdersToExcel);
-      document.getElementById('waybill-order-selector').addEventListener('change', e => renderWaybill(e.target.value));
-
-      // حفظ مندوب جديد
-      document.getElementById('courier-form').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const name = document.getElementById('courier-name').value.trim();
-        const phone = document.getElementById('courier-phone').value.trim();
-        const zone = document.getElementById('courier-zone').value.trim();
-
-        couriersList.push({ name, phone, zone });
-        saveCouriersLocally();
-        document.getElementById('courier-form').reset();
-        alert(`تم تسجيل المندوب (${name}) بنجاح!`);
-      });
-
-      // حفظ البوليصة سحابياً
-      document.getElementById('order-form').addEventListener('submit', async e => {
-        e.preventDefault();
-        const btn = document.getElementById('save-order-submit-btn');
-        btn.disabled = true;
-        btn.textContent = 'جاري الحفظ في السحابة...';
-
-        const newAwbId = `BRQ-${Math.floor(1000 + Math.random() * 9000)}`;
-        const courierVal = document.getElementById('order-courier-select').value;
-
-        const orderData = {
-          id: newAwbId,
-          createdAt: new Date().toLocaleString('ar-EG'),
-          senderName: document.getElementById('sender-name').value.trim(),
-          senderPhone: document.getElementById('sender-phone').value.trim(),
-          recipientName: document.getElementById('recipient-name').value.trim(),
-          recipientPhone: document.getElementById('recipient-phone').value.trim(),
-          recipientCity: document.getElementById('recipient-city').value.trim(),
-          recipientAddress: document.getElementById('recipient-address').value.trim(),
-          courierInfo: courierVal || 'غير مسند',
-          packageDesc: document.getElementById('package-desc').value.trim(),
-          itemPrice: Number(document.getElementById('fin-item-price').value) || 0,
-          deliveryFee: Number(document.getElementById('fin-delivery-fee').value) || 0,
-          status: 'CREATED'
-        };
-
-        try {
-          const res = await fetch(`${SB_BASE}/orders`, {
-            method: 'POST',
-            headers: HEADERS,
-            body: JSON.stringify({
-              awb_id: newAwbId,
-              data: orderData
-            })
-          });
-
-          if (res.ok) {
-            alert(`تم حفظ البوليصة (${newAwbId}) في السحابة بنجاح!`);
-            document.getElementById('order-form').reset();
-            await loadOrdersFromCloud();
-            openWaybillView(newAwbId);
-          } else {
-            const err = await res.json();
-            alert('تعذر الحفظ في السحابة: ' + JSON.stringify(err));
-          }
-        } catch (err) {
-          alert('خطأ اتصال بالشبكة: ' + err.message);
-        } finally {
-          btn.disabled = false;
-          btn.textContent = 'حفظ وإصدار البوليصة فوراً';
+      setInterval(() => {
+        if (currentUser) {
+          loadOrders();
         }
-      });
-
-      // إعدادات الشركة
-      const settingsModal = document.getElementById('settings-modal');
-      document.getElementById('open-settings-btn').addEventListener('click', () => {
-        document.getElementById('setting-company-name').value = companyInfo.name;
-        document.getElementById('setting-company-phone').value = companyInfo.phone;
-        document.getElementById('setting-company-email').value = companyInfo.email || '';
-        document.getElementById('setting-company-address').value = companyInfo.address || '';
-        settingsModal.classList.remove('hidden');
-        settingsModal.classList.add('flex');
-      });
-
-      const closeSettings = () => {
-        settingsModal.classList.add('hidden');
-        settingsModal.classList.remove('flex');
-      };
-      document.getElementById('close-settings-btn').addEventListener('click', closeSettings);
-      document.getElementById('cancel-settings-btn').addEventListener('click', closeSettings);
-
-      document.getElementById('settings-form').addEventListener('submit', async e => {
-        e.preventDefault();
-        const btn = document.getElementById('save-settings-submit-btn');
-        btn.textContent = 'جاري الحفظ...';
-
-        const name = document.getElementById('setting-company-name').value.trim();
-        const phone = document.getElementById('setting-company-phone').value.trim();
-        const email = document.getElementById('setting-company-email').value.trim();
-        const address = document.getElementById('setting-company-address').value.trim();
-
-        try {
-          await fetch(`${SB_BASE}/settings?Company_%20Name=neq.___none___`, {
-            method: 'PATCH',
-            headers: { ...HEADERS, "Prefer": "return=minimal" },
-            body: JSON.stringify({ "Company_ Name": name, "Phone": phone, "Email": email, "Address": address })
-          });
-          companyInfo = { name, phone, email, address };
-          document.getElementById('header-company-name').textContent = name;
-          closeSettings();
-          alert('تم حفظ إعدادات الشركة سحابياً بنجاح!');
-        } catch (err) {
-          alert('خطأ في حفظ الإعدادات: ' + err.message);
-        } finally {
-          btn.textContent = 'حفظ سحابياً';
-        }
-      });
-
-      // تتبع الشحنة
-      document.getElementById('track-search-btn').addEventListener('click', () => {
-        const query = document.getElementById('track-search-input').value.trim().toUpperCase();
-        const found = cloudOrders.find(o => o.id.toUpperCase() === query);
-        const box = document.getElementById('tracking-result-box');
-        if (!found) {
-          box.innerHTML = `<div class="p-3 bg-rose-50 text-rose-700 font-bold text-center rounded-xl text-xs">لا توجد بوليصة بهذا الرقم في السحابة</div>`;
-          return;
-        }
-        box.innerHTML = `
-          <div class="bg-slate-900 text-white p-4 rounded-xl flex justify-between items-center">
-            <div>
-              <div class="text-xs text-indigo-400 font-mono">${found.id}</div>
-              <div class="font-bold">${found.recipientName} - ${found.recipientCity}</div>
-              <div class="text-xs text-amber-300 mt-1">المندوب: ${found.courierInfo || 'غير مسند'}</div>
-            </div>
-            <span class="px-3 py-1 bg-emerald-600 rounded-full text-xs font-bold">مسجلة في السحابة</span>
-          </div>
-        `;
-      });
+      }, 10000);
     });
   </script>
 </body>
