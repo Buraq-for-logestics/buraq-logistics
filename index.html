@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>براق للشحن (Buraq) | نظام إدارة بوالص التوصيل وتتبع الأوردرات</title>
+  <title>براق للشحن (Buraq) | نظام إدارة بوالص التوصيل وتتبع الأوردرات السحابي</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,237 +15,103 @@
           fontFamily: {
             sans: ['Cairo', 'Inter', 'sans-serif'],
             mono: ['Inter', 'monospace']
-          },
-          colors: {
-            brand: {
-              50: '#eef2ff',
-              100: '#e0e7ff',
-              500: '#4f46e5',
-              600: '#4338ca',
-              700: '#3730a3',
-              900: '#1e1b4b'
-            }
           }
         }
       }
     };
   </script>
   <style>
-    body {
-      font-family: 'Cairo', 'Inter', sans-serif;
-      background-color: #f8fafc;
-      color: #0f172a;
-    }
-    .num-font {
-      font-family: 'Inter', 'Cairo', sans-serif;
-    }
+    body { font-family: 'Cairo', 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; }
+    .num-font { font-family: 'Inter', 'Cairo', sans-serif; }
     @media print {
-      body * {
-        visibility: hidden;
-      }
-      #printable-waybill-area,
-      #printable-waybill-area * {
-        visibility: visible;
-      }
-      #printable-waybill-area {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        margin: 0;
-        padding: 0;
-        box-shadow: none !important;
-        border: none !important;
-      }
-      .no-print {
-        display: none !important;
-      }
-    }
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #f1f5f9;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 3px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #94a3b8;
+      body * { visibility: hidden; }
+      #printable-waybill-area, #printable-waybill-area * { visibility: visible; }
+      #printable-waybill-area { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; box-shadow: none !important; border: none !important; }
+      .no-print { display: none !important; }
     }
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
-  <!-- Toast Notification -->
-  <div id="toast-container" class="fixed bottom-5 left-5 z-50 flex flex-col gap-2 pointer-events-none no-print"></div>
-
-  <!-- Top Header -->
+  <!-- Header -->
   <header class="bg-slate-900 text-white shadow-lg border-b border-slate-800 sticky top-0 z-30 no-print">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
-      <!-- Brand Identity -->
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-inner">
-          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
-            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
-          </svg>
-        </div>
+        <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-lg">📦</div>
         <div>
           <div class="flex items-center gap-2">
             <h1 id="header-company-name" class="text-lg font-bold tracking-tight">براق للشحن • Buraq</h1>
-            <span class="text-xs bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 px-2 py-0.5 rounded-full">Buraq Delivery</span>
+            <span class="text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-2 py-0.5 rounded-full flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> سحابي متصل
+            </span>
           </div>
-          <p class="text-xs text-slate-400">نظام إصدار البوالص وتتبع الأوردرات وحسابات المناديب</p>
+          <p class="text-xs text-slate-400">نظام إصدار ومزامنة بوالص الشحن لحظياً</p>
         </div>
       </div>
 
-      <!-- Navigation Tabs -->
-      <nav class="flex items-center gap-1 bg-slate-800/90 p-1 rounded-xl border border-slate-700 overflow-x-auto max-w-full">
-        <button type="button" data-tab="dashboard" class="nav-tab-btn px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-indigo-600 text-white shadow">
-          لوحة التحكم والأوردرات
-        </button>
-        <button type="button" data-tab="new-order" class="nav-tab-btn px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-300 hover:text-white hover:bg-slate-700/60">
-          + إنشاء بوليصة جديدة
-        </button>
-        <button type="button" data-tab="waybill-view" class="nav-tab-btn px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-300 hover:text-white hover:bg-slate-700/60">
-          معاينة وطباعة البوليصة
-        </button>
-        <button type="button" data-tab="customer-tracking" class="nav-tab-btn px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-300 hover:text-white hover:bg-slate-700/60">
-          شاشة تتبع العميل
-        </button>
-        <button type="button" data-tab="couriers" class="nav-tab-btn px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-300 hover:text-white hover:bg-slate-700/60">
-          الموصلاتية والحسابات
-        </button>
+      <nav class="flex items-center gap-1 bg-slate-800/90 p-1 rounded-xl border border-slate-700 overflow-x-auto">
+        <button type="button" data-tab="dashboard" class="nav-tab-btn px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-indigo-600 text-white shadow">لوحة التحكم</button>
+        <button type="button" data-tab="new-order" class="nav-tab-btn px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-300 hover:text-white hover:bg-slate-700/60">+ إصدار بوليصة</button>
+        <button type="button" data-tab="waybill-view" class="nav-tab-btn px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-300 hover:text-white hover:bg-slate-700/60">طباعة ومعاينة</button>
+        <button type="button" data-tab="customer-tracking" class="nav-tab-btn px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-300 hover:text-white hover:bg-slate-700/60">تتبع الشحنة</button>
       </nav>
 
-      <!-- Company Settings Trigger -->
       <button type="button" id="open-settings-btn" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-2 rounded-lg flex items-center gap-1.5 transition">
-        <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-        <span>إعدادات الشركة</span>
+        <span>⚙️ إعدادات الشركة</span>
       </button>
     </div>
   </header>
 
-  <!-- Main Workspace -->
+  <!-- Main -->
   <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6">
 
-    <!-- TAB 1: DASHBOARD & ORDERS -->
+    <!-- TAB 1: DASHBOARD -->
     <section id="tab-dashboard" class="tab-panel space-y-6">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm flex items-center justify-between">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex items-center justify-between">
           <div>
-            <p class="text-xs font-semibold text-slate-500">إجمالي الأوردرات النشطة</p>
+            <p class="text-xs font-semibold text-slate-500">إجمالي الشحنات في السحابة</p>
             <p id="kpi-total-orders" class="text-2xl font-extrabold text-slate-900 num-font mt-1">0</p>
-            <p id="kpi-delivered-sub" class="text-xs text-emerald-600 font-medium mt-1">0 تم التسليم بنجاح</p>
           </div>
-          <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-            </svg>
-          </div>
+          <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">🚚</div>
         </div>
 
-        <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm flex items-center justify-between">
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex items-center justify-between">
           <div>
-            <p class="text-xs font-semibold text-slate-500">إجمالي التحصيل (COD)</p>
+            <p class="text-xs font-semibold text-slate-500">إجمالي مبالغ التحصيل (COD)</p>
             <p id="kpi-total-cod" class="text-2xl font-extrabold text-slate-900 num-font mt-1">0 ج.م</p>
-            <p id="kpi-merchant-net" class="text-xs text-slate-500 mt-1">صافي التجار: 0 ج.م</p>
           </div>
-          <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
+          <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">💰</div>
         </div>
 
-        <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm flex items-center justify-between">
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex items-center justify-between">
           <div>
-            <p class="text-xs font-semibold text-slate-500">عمولة الشركة (الوسيط)</p>
-            <p id="kpi-company-profit" class="text-2xl font-extrabold text-indigo-600 num-font mt-1">0 ج.م</p>
-            <p id="kpi-courier-payout" class="text-xs text-slate-500 mt-1">مستحقات الموصلاتية: 0 ج.م</p>
+            <p class="text-xs font-semibold text-slate-500">حالة المزامنة السحابية</p>
+            <p class="text-sm font-bold text-emerald-600 mt-1">نشطة (تحديث تلقائي)</p>
           </div>
-          <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-            </svg>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm flex items-center justify-between">
-          <div>
-            <p class="text-xs font-semibold text-slate-500">مع الموصلاتية الآن</p>
-            <p id="kpi-in-transit" class="text-2xl font-extrabold text-amber-600 num-font mt-1">0</p>
-            <p id="kpi-pending-assign" class="text-xs text-rose-600 font-medium mt-1">0 بانتظار تعيين مندوب</p>
-          </div>
-          <div class="w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-          </div>
+          <div class="w-10 h-10 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center font-bold">⚡</div>
         </div>
       </div>
 
-      <!-- Filters & Actions -->
-      <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm space-y-4">
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <div class="flex items-center gap-2">
-            <h2 class="text-base font-bold text-slate-900">جدول تتبع وإدارة الأوردرات</h2>
-            <span id="filtered-count-badge" class="text-xs bg-slate-100 text-slate-700 px-2.5 py-0.5 rounded-full font-semibold num-font">0</span>
-          </div>
-          <div class="flex flex-wrap items-center gap-2">
-            <button type="button" id="quick-new-order-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold px-4 py-2 rounded-xl shadow-sm transition flex items-center gap-1.5">
-              <span>+ إصدار بوليصة جديدة</span>
-            </button>
-            <button type="button" id="export-csv-btn" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-semibold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5">
-              <span>تصدير التقرير (CSV)</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-          <div class="md:col-span-2 relative">
-            <input type="text" id="search-orders-input" placeholder="ابحث برقم البوليصة، اسم العميل، المستلم، أو رقم الموبايل..." class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2 text-sm focus:bg-white focus:border-indigo-500 focus:outline-none" />
-          </div>
-          <div>
-            <select id="filter-status-select" class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-sm focus:bg-white focus:border-indigo-500 focus:outline-none">
-              <option value="ALL">كل الحالات</option>
-              <option value="CREATED">تم إنشاء البوليصة</option>
-              <option value="PICKED_UP">تم الاستلام من الراسل</option>
-              <option value="OUT_FOR_DELIVERY">مع المندوب للتوصيل</option>
-              <option value="DELIVERED">تم التسليم والتحصيل</option>
-              <option value="POSTPONED">مؤجل لليوم التالي</option>
-              <option value="RETURNED">مرتجع</option>
-            </select>
-          </div>
-          <div>
-            <select id="filter-courier-select" class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-sm focus:bg-white focus:border-indigo-500 focus:outline-none">
-              <option value="ALL">كل الموصلاتية (المناديب)</option>
-              <option value="UNASSIGNED">بدون مندوب (غير معين)</option>
-            </select>
-          </div>
+      <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
+        <h2 class="text-base font-bold text-slate-900">سجل البوالص المشتركة بين الأجهزة</h2>
+        <div class="flex items-center gap-2">
+          <button type="button" id="refresh-cloud-btn" class="bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold px-3 py-2 rounded-xl transition">🔄 تحديث يدوي</button>
+          <button type="button" id="quick-new-order-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-xl shadow transition">+ إنشاء بوليصة جديدة</button>
         </div>
       </div>
 
-      <!-- Orders Table -->
-      <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full text-right text-sm">
             <thead class="bg-slate-50 text-slate-600 text-xs font-bold border-b border-slate-200">
               <tr>
-                <th class="py-3.5 px-4">رقم البوليصة</th>
-                <th class="py-3.5 px-4">الراسل (العميل)</th>
-                <th class="py-3.5 px-4">المستلم والمنطقة</th>
-                <th class="py-3.5 px-4">المندوب (الموصلاتي)</th>
-                <th class="py-3.5 px-4">المطلوب تحصيله (COD)</th>
-                <th class="py-3.5 px-4">حالة الأوردر</th>
-                <th class="py-3.5 px-4 text-center">إجراءات وبوليصة</th>
+                <th class="py-3 px-4">رقم البوليصة</th>
+                <th class="py-3 px-4">تاريخ الإصدار</th>
+                <th class="py-3 px-4">الراسل (التاجر)</th>
+                <th class="py-3 px-4">المستلم والمنطقة</th>
+                <th class="py-3 px-4">مطلوب تحصيله (COD)</th>
+                <th class="py-3 px-4 text-center">إجراءات</th>
               </tr>
             </thead>
             <tbody id="orders-table-body" class="divide-y divide-slate-100"></tbody>
@@ -254,1012 +120,348 @@
       </div>
     </section>
 
-    <!-- TAB 2: CREATE / EDIT WAYBILL -->
+    <!-- TAB 2: NEW ORDER -->
     <section id="tab-new-order" class="tab-panel hidden">
-      <div class="max-w-4xl mx-auto bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <div class="max-w-3xl mx-auto bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
-          <div>
-            <h2 id="form-modal-title" class="text-lg font-bold">إنشاء بوليصة توصيل جديدة</h2>
-            <p class="text-xs text-slate-400">سجل بيانات الراسل والمستلم والتفاصيل المالية لإصدار البوليصة فوراً</p>
-          </div>
-          <span id="preview-next-awb" class="text-xs font-mono bg-indigo-500/20 border border-indigo-400/30 text-indigo-200 px-3 py-1 rounded-lg">AWB: BRQ-1004</span>
+          <h2 class="text-lg font-bold">إصدار بوليصة شحن جديدة</h2>
+          <span class="text-xs font-mono bg-indigo-500/20 text-indigo-200 px-3 py-1 rounded-lg">حفظ سحابي مباشر</span>
         </div>
 
-        <form id="order-form" class="p-6 space-y-6">
-          <input type="hidden" id="edit-order-id" value="" />
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
-              <div class="flex items-center justify-between border-b border-slate-200 pb-2">
-                <h3 class="text-sm font-bold text-indigo-900">1. بيانات الراسل (العميل / التاجر)</h3>
-                <span class="text-xs text-slate-500">الطرف الأول</span>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1">اسم التاجر / المتجر / العميل *</label>
-                <input type="text" id="sender-name" required placeholder="مثال: متجر النور للإلكترونيات" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none" />
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1">رقم موبايل الراسل *</label>
-                <input type="tel" id="sender-phone" required placeholder="010xxxxxxxx" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm num-font focus:border-indigo-500 focus:outline-none" />
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1">عنوان الاستلام (Pickup Address) *</label>
-                <input type="text" id="sender-address" required placeholder="مثال: العاشر من رمضان - المجاورة 12" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none" />
-              </div>
+        <form id="order-form" class="p-6 space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">اسم الراسل / التاجر *</label>
+              <input type="text" id="sender-name" required placeholder="مثال: متجر النور" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-indigo-500" />
             </div>
-
-            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
-              <div class="flex items-center justify-between border-b border-slate-200 pb-2">
-                <h3 class="text-sm font-bold text-emerald-900">2. بيانات المرسل إليه (المستلم)</h3>
-                <span class="text-xs text-slate-500">الطرف الثاني</span>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1">اسم المستلم بالكامل *</label>
-                <input type="text" id="recipient-name" required placeholder="مثال: أحمد محمود عبد الرحمن" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none" />
-              </div>
-              <div class="grid grid-cols-2 gap-2">
-                <div>
-                  <label class="block text-xs font-semibold text-slate-700 mb-1">رقم موبايل المستلم *</label>
-                  <input type="tel" id="recipient-phone" required placeholder="011xxxxxxxx" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm num-font focus:border-indigo-500 focus:outline-none" />
-                </div>
-                <div>
-                  <label class="block text-xs font-semibold text-slate-700 mb-1">المدينة / المنطقة *</label>
-                  <select id="recipient-city" class="w-full rounded-lg border border-slate-300 px-2.5 py-2 text-sm bg-white focus:border-indigo-500 focus:outline-none">
-                    <option value="العاشر من رمضان">العاشر من رمضان</option>
-                    <option value="القاهرة الجديدة - التجمع">القاهرة الجديدة - التجمع</option>
-                    <option value="مدينة نصر ومصر الجديدة">مدينة نصر ومصر الجديدة</option>
-                    <option value="الزقازيق - الشرقية">الزقازيق - الشرقية</option>
-                    <option value="العبور والشروق">العبور والشروق</option>
-                    <option value="الجيزة والمهندسين">الجيزة والمهندسين</option>
-                    <option value="الإسكندرية">الإسكندرية</option>
-                    <option value="أخرى">منطقة أخرى</option>
-                  </select>
-                </div>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1">العنوان التفصيلي وعلامة مميزة *</label>
-                <input type="text" id="recipient-address" required placeholder="الشارع، رقم العمارة، الدور، الشقة، بجوار..." class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none" />
-              </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">رقم هاتف الراسل *</label>
+              <input type="tel" id="sender-phone" required placeholder="010xxxxxxxx" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm num-font focus:outline-indigo-500" />
             </div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
-              <h3 class="text-sm font-bold text-slate-900 border-b border-slate-200 pb-2">3. مواصفات الشحنة وتعليمات التسليم</h3>
-              <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1">وصف محتويات الأوردر *</label>
-                <input type="text" id="package-desc" required placeholder="مثال: حذاء رياضي مقاس 43 + ساعة ذكية" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none" />
-              </div>
-              <div class="grid grid-cols-3 gap-2">
-                <div>
-                  <label class="block text-xs font-semibold text-slate-700 mb-1">عدد القطع</label>
-                  <input type="number" id="package-pieces" min="1" value="1" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm num-font focus:border-indigo-500 focus:outline-none" />
-                </div>
-                <div>
-                  <label class="block text-xs font-semibold text-slate-700 mb-1">الوزن (كجم)</label>
-                  <input type="number" id="package-weight" min="0.5" step="0.5" value="1" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm num-font focus:border-indigo-500 focus:outline-none" />
-                </div>
-                <div>
-                  <label class="block text-xs font-semibold text-slate-700 mb-1">معاينة الأوردر</label>
-                  <select id="package-inspection" class="w-full rounded-lg border border-slate-300 px-2 py-2 text-xs bg-white focus:border-indigo-500 focus:outline-none">
-                    <option value="مسموح بفتح الشحنة للمعاينة">مسموح بالمعاينة</option>
-                    <option value="غير مسموح بالفتح قبل الدفع">غير مسموح بالفتح</option>
-                  </select>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 gap-2">
-                <div>
-                  <label class="block text-xs font-semibold text-slate-700 mb-1">طبيعة الشحنة</label>
-                  <select id="package-fragile" class="w-full rounded-lg border border-slate-300 px-2.5 py-2 text-xs bg-white focus:border-indigo-500 focus:outline-none">
-                    <option value="عادية">شحنة عادية</option>
-                    <option value="قابل للكسر - عناية خاصة">قابل للكسر (عناية خاصة)</option>
-                    <option value="مستندات هامة">مستندات / أوراق هامة</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-xs font-semibold text-slate-700 mb-1">المندوب المكلّف (الموصلاتي)</label>
-                  <select id="assign-courier" class="w-full rounded-lg border border-slate-300 px-2.5 py-2 text-xs bg-white focus:border-indigo-500 focus:outline-none"></select>
-                </div>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1">ملاحظات إضافية على البوليصة</label>
-                <input type="text" id="package-notes" placeholder="مثال: الاتصال قبل الوصول بنصف ساعة" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none" />
-              </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">اسم المستلم بالكامل *</label>
+              <input type="text" id="recipient-name" required placeholder="مثال: أحمد محمود" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-indigo-500" />
             </div>
-
-            <div class="bg-indigo-50/60 p-4 rounded-xl border border-indigo-200 space-y-3">
-              <h3 class="text-sm font-bold text-indigo-950 border-b border-indigo-200 pb-2">4. الحسابات المالية للبوليصة (COD)</h3>
-              <div class="grid grid-cols-2 gap-3">
-                <div>
-                  <label class="block text-xs font-semibold text-slate-700 mb-1">ثمن البضاعة (للتاجر) ج.م *</label>
-                  <input type="number" id="fin-item-price" min="0" step="5" value="450" required class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm font-bold num-font focus:border-indigo-500 focus:outline-none" />
-                </div>
-                <div>
-                  <label class="block text-xs font-semibold text-slate-700 mb-1">مصاريف التوصيل (ج.م) *</label>
-                  <input type="number" id="fin-delivery-fee" min="0" step="5" value="60" required class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm font-bold num-font focus:border-indigo-500 focus:outline-none" />
-                </div>
-              </div>
-
-              <div class="grid grid-cols-2 gap-3">
-                <div>
-                  <label class="block text-xs font-semibold text-slate-700 mb-1">نسبة الشركة (%)</label>
-                  <input type="number" id="fin-company-pct" min="0" max="100" value="25" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm num-font focus:border-indigo-500 focus:outline-none" />
-                </div>
-                <div>
-                  <label class="block text-xs font-semibold text-slate-700 mb-1">طريقة السداد</label>
-                  <select id="fin-payment-type" class="w-full rounded-lg border border-slate-300 px-2.5 py-2 text-xs bg-white focus:border-indigo-500 focus:outline-none">
-                    <option value="COD">تحصيل نقدي عند الاستلام (COD)</option>
-                    <option value="PREPAID">خالص الدفع مسبقاً</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="bg-white rounded-xl p-3.5 border border-indigo-200 space-y-2 mt-2">
-                <div class="flex items-center justify-between text-xs text-slate-600">
-                  <span>صافي مستحقات التاجر:</span>
-                  <span id="calc-merchant-net" class="font-bold text-slate-800 num-font">450 ج.م</span>
-                </div>
-                <div class="flex items-center justify-between text-xs text-slate-600">
-                  <span>حصة الموصلاتي (المندوب):</span>
-                  <span id="calc-courier-fee" class="font-bold text-emerald-700 num-font">45 ج.م</span>
-                </div>
-                <div class="flex items-center justify-between text-xs text-slate-600">
-                  <span>عمولة الشركة:</span>
-                  <span id="calc-company-fee" class="font-bold text-indigo-600 num-font">15 ج.م</span>
-                </div>
-                <div class="border-t border-slate-200 pt-2 flex items-center justify-between">
-                  <span class="text-sm font-extrabold text-slate-900">المطلوب تحصيله من المستلم:</span>
-                  <span id="calc-total-cod" class="text-lg font-extrabold text-indigo-700 num-font">510 ج.م</span>
-                </div>
-              </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">رقم هاتف المستلم *</label>
+              <input type="tel" id="recipient-phone" required placeholder="011xxxxxxxx" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm num-font focus:outline-indigo-500" />
             </div>
           </div>
 
-          <div class="flex flex-wrap items-center justify-end gap-3 pt-2 border-t border-slate-200">
-            <button type="button" id="cancel-form-btn" class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-sm font-semibold hover:bg-slate-100 transition">
-              إلغاء والعودة
-            </button>
-            <button type="submit" id="save-and-print-btn" class="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold shadow-md transition">
-              حفظ وإصدار بوليصة التوصيل
-            </button>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">المدينة / المنطقة *</label>
+              <input type="text" id="recipient-city" required placeholder="مثال: العاشر من رمضان / القاهرة" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-indigo-500" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">العنوان بالتفصيل *</label>
+              <input type="text" id="recipient-address" required placeholder="الشارع، رقم العمارة، الشقة" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-indigo-500" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">وصف محتوى الشحنة *</label>
+              <input type="text" id="package-desc" required placeholder="مثال: ملابس / إلكترونيات" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-indigo-500" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">قيمة البضاعة (ج.م) *</label>
+              <input type="number" id="fin-item-price" required min="0" value="400" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm num-font focus:outline-indigo-500" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">تكلفة الشحن والتوصيل (ج.م) *</label>
+              <input type="number" id="fin-delivery-fee" required min="0" value="50" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm num-font focus:outline-indigo-500" />
+            </div>
+          </div>
+
+          <div class="flex justify-end gap-3 pt-3 border-t border-slate-200">
+            <button type="button" id="cancel-form-btn" class="px-4 py-2 border rounded-xl text-sm font-semibold text-slate-700">إلغاء</button>
+            <button type="submit" id="save-order-submit-btn" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold shadow transition">حفظ وإرسال للسحابة فوراً</button>
           </div>
         </form>
       </div>
     </section>
 
-    <!-- TAB 3: WAYBILL PREVIEW & PRINT -->
-    <section id="tab-waybill-view" class="tab-panel hidden space-y-5">
-      <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3 no-print">
-        <div class="flex flex-wrap items-center gap-3">
-          <label class="text-xs font-bold text-slate-700">اختر البوليصة للمعاينة:</label>
-          <select id="waybill-order-selector" class="rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-sm font-semibold focus:border-indigo-500 focus:outline-none"></select>
-
-          <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
-            <button type="button" id="size-standard-btn" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-900 shadow-sm transition">
-              مقاس قياسي مفصل (A4 / A5)
-            </button>
-            <button type="button" id="size-thermal-btn" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition">
-              ملصق حراري (10×15 سم)
-            </button>
-          </div>
-        </div>
-
+    <!-- TAB 3: WAYBILL VIEW -->
+    <section id="tab-waybill-view" class="tab-panel hidden space-y-4">
+      <div class="flex justify-between items-center bg-white p-4 rounded-2xl border border-slate-200 shadow-sm no-print">
         <div class="flex items-center gap-2">
-          <button type="button" id="copy-awb-btn" class="bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs sm:text-sm font-semibold px-3.5 py-2 rounded-xl transition">
-            نسخ رقم البوليصة
-          </button>
-          <button type="button" id="print-waybill-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold px-5 py-2 rounded-xl shadow transition flex items-center gap-2">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-            </svg>
-            <span>طباعة البوليصة الآن</span>
-          </button>
+          <label class="text-xs font-bold text-slate-700">اختر البوليصة:</label>
+          <select id="waybill-order-selector" class="rounded-xl border border-slate-300 px-3 py-2 text-sm font-bold"></select>
         </div>
+        <button type="button" onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-xl text-sm font-bold shadow flex items-center gap-1.5 transition">
+          <span>🖨️ طباعة البوليصة</span>
+        </button>
       </div>
-
       <div class="flex justify-center">
-        <div id="printable-waybill-area" class="w-full max-w-3xl bg-white text-slate-950 border-2 border-slate-900 rounded-xl p-5 shadow-md transition-all"></div>
+        <div id="printable-waybill-area" class="w-full max-w-2xl bg-white border-2 border-slate-900 rounded-xl p-6 shadow-md"></div>
       </div>
     </section>
 
-    <!-- TAB 4: CUSTOMER TRACKING PORTAL -->
+    <!-- TAB 4: TRACKING -->
     <section id="tab-customer-tracking" class="tab-panel hidden space-y-6">
-      <div class="max-w-3xl mx-auto bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
-        <div class="text-center space-y-2">
-          <span class="inline-block text-xs font-bold bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full border border-indigo-200">بوابة تتبع الشحنات للعملاء والمستلمين</span>
-          <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">تتبع حالة شحنتك لحظة بلحظة</h2>
-          <p class="text-xs sm:text-sm text-slate-500">أدخل رقم البوليصة في براق للشحن (مثال: <span class="font-mono font-semibold text-slate-700">BRQ-1001</span>) لمعرفة خط سير الأوردر وبيانات المندوب</p>
+      <div class="max-w-2xl mx-auto bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
+        <h2 class="text-xl font-extrabold text-center text-slate-900">تتبع مسار شحنتك</h2>
+        <div class="flex gap-2">
+          <input type="text" id="track-search-input" placeholder="أدخل رقم البوليصة مثل BRQ-1001" class="flex-1 rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-mono focus:outline-indigo-500" />
+          <button type="button" id="track-search-btn" class="bg-indigo-600 text-white font-bold px-6 py-2.5 rounded-xl">تتبع</button>
         </div>
-
-        <div class="flex flex-col sm:flex-row gap-2 max-w-xl mx-auto">
-          <input type="text" id="track-search-input" placeholder="أدخل رقم البوليصة مثل BRQ-1001..." class="flex-1 rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-mono focus:border-indigo-600 focus:outline-none" />
-          <button type="button" id="track-search-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm px-6 py-2.5 rounded-xl shadow transition">
-            تتبع الشحنة
-          </button>
-        </div>
-
-        <div id="sample-awb-pills" class="flex flex-wrap items-center justify-center gap-2 text-xs"></div>
-        <div id="tracking-result-box" class="border-t border-slate-200 pt-6"></div>
-      </div>
-    </section>
-
-    <!-- TAB 5: COURIERS & SETTLEMENTS -->
-    <section id="tab-couriers" class="tab-panel hidden space-y-6">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm h-fit space-y-4">
-          <h3 class="text-base font-bold text-slate-900 border-b border-slate-200 pb-2">إضافة مندوب (موصلاتي) جديد</h3>
-          <form id="courier-form" class="space-y-3">
-            <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">اسم المندوب رباعي أو ثلاثي *</label>
-              <input type="text" id="courier-name-input" required placeholder="مثال: كابتن كريم عادل" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none" />
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">رقم الموبايل *</label>
-              <input type="tel" id="courier-phone-input" required placeholder="010xxxxxxxx" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm num-font focus:border-indigo-500 focus:outline-none" />
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1">وسيلة التوصيل</label>
-                <select id="courier-vehicle-input" class="w-full rounded-lg border border-slate-300 px-2.5 py-2 text-xs bg-white focus:border-indigo-500 focus:outline-none">
-                  <option value="موتوسيكل">موتوسيكل</option>
-                  <option value="سيارة ملاكي / فان">سيارة / فان</option>
-                  <option value="تروسيكل / نقل خفيف">نقل خفيف</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1">نطاق التغطية</label>
-                <input type="text" id="courier-zone-input" required placeholder="العاشر / القاهرة" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs focus:border-indigo-500 focus:outline-none" />
-              </div>
-            </div>
-            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm py-2.5 rounded-xl shadow transition">
-              + تسجيل المندوب في النظام
-            </button>
-          </form>
-        </div>
-
-        <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
-          <div class="border-b border-slate-200 pb-3">
-            <h3 class="text-base font-bold text-slate-900">قائمة الموصلاتية وتسوية العهدة النقدية</h3>
-            <p class="text-xs text-slate-500">متابعة الأوردرات المسندة لكل مندوب وإجمالي النقدية المحصلة والمطلوب توريدها</p>
-          </div>
-
-          <div class="overflow-x-auto">
-            <table class="w-full text-right text-sm">
-              <thead class="bg-slate-50 text-slate-600 text-xs font-bold border-b border-slate-200">
-                <tr>
-                  <th class="py-3 px-3">اسم المندوب</th>
-                  <th class="py-3 px-3">المنطقة والمركبة</th>
-                  <th class="py-3 px-3 text-center">الأوردرات (مُسلّم / كلي)</th>
-                  <th class="py-3 px-3">إجمالي التحصيل معه</th>
-                  <th class="py-3 px-3">عمولة المندوب</th>
-                  <th class="py-3 px-3">صافي التوريد للشركة</th>
-                </tr>
-              </thead>
-              <tbody id="couriers-table-body" class="divide-y divide-slate-100"></tbody>
-            </table>
-          </div>
-        </div>
+        <div id="tracking-result-box" class="pt-4 border-t border-slate-200"></div>
       </div>
     </section>
 
   </main>
 
-  <!-- MODAL: COMPANY SETTINGS -->
+  <!-- MODAL: SETTINGS -->
   <div id="settings-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-40 hidden items-center justify-center p-4 no-print">
     <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200 space-y-4">
       <div class="flex items-center justify-between border-b border-slate-200 pb-3">
-        <h3 class="text-base font-bold text-slate-900">إعدادات بيانات الشركة على البوليصة</h3>
-        <button type="button" id="close-settings-btn" class="text-slate-400 hover:text-slate-700 text-sm font-bold px-2 py-1">✕</button>
+        <h3 class="text-base font-bold text-slate-900">إعدادات بيانات الشركة السحابية</h3>
+        <button type="button" id="close-settings-btn" class="text-slate-400 hover:text-slate-700 text-sm font-bold">✕</button>
       </div>
       <form id="settings-form" class="space-y-3">
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">اسم شركة الشحن / الوسيط</label>
-          <input type="text" id="setting-company-name" required class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none" />
+          <label class="block text-xs font-semibold text-slate-700 mb-1">اسم الشركة</label>
+          <input type="text" id="setting-company-name" required class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-indigo-500" />
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">رقم خدمة العملاء والشكاوى</label>
-          <input type="text" id="setting-company-phone" required class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm num-font focus:border-indigo-500 focus:outline-none" />
+          <label class="block text-xs font-semibold text-slate-700 mb-1">رقم خدمة العملاء</label>
+          <input type="text" id="setting-company-phone" required class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm num-font focus:outline-indigo-500" />
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">البريد الإلكتروني للشركة</label>
-          <input type="email" id="setting-company-email" placeholder="info@buraq.com" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none" />
+          <label class="block text-xs font-semibold text-slate-700 mb-1">البريد الإلكتروني</label>
+          <input type="email" id="setting-company-email" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-indigo-500" />
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">عنوان مقر الشركة</label>
-          <input type="text" id="setting-company-address" placeholder="العاشر من رمضان" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none" />
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">نسبة عمولة الشركة الافتراضية (%)</label>
-          <input type="number" id="setting-default-pct" min="0" max="100" required class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm num-font focus:border-indigo-500 focus:outline-none" />
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">شروط وسياسة التوصيل أسفل البوليصة</label>
-          <textarea id="setting-terms" rows="2" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs focus:border-indigo-500 focus:outline-none"></textarea>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">مقر الشركة</label>
+          <input type="text" id="setting-company-address" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-indigo-500" />
         </div>
         <div class="flex justify-end gap-2 pt-2">
-          <button type="button" id="cancel-settings-btn" class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700">إلغاء</button>
-          <button type="submit" id="save-settings-submit-btn" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold">حفظ الإعدادات سحابياً</button>
+          <button type="button" id="cancel-settings-btn" class="px-4 py-2 border rounded-xl text-xs font-semibold text-slate-700">إلغاء</button>
+          <button type="submit" id="save-settings-submit-btn" class="px-5 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold">حفظ سحابياً</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- MODAL: UPDATE STATUS -->
-  <div id="status-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-40 hidden items-center justify-center p-4 no-print">
-    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl border border-slate-200 space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-200 pb-3">
-        <div>
-          <h3 class="text-base font-bold text-slate-900">تحديث حالة الأوردر وسجل التتبع</h3>
-          <p id="status-modal-awb" class="text-xs font-mono text-indigo-600 font-bold"></p>
-        </div>
-        <button type="button" id="close-status-modal-btn" class="text-slate-400 hover:text-slate-700 text-sm font-bold px-2 py-1">✕</button>
-      </div>
-
-      <form id="status-update-form" class="space-y-3">
-        <input type="hidden" id="status-modal-order-id" />
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">الحالة الجديدة للأوردر</label>
-            <select id="status-modal-select" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm bg-white focus:border-indigo-500 focus:outline-none">
-              <option value="CREATED">تم إنشاء البوليصة</option>
-              <option value="PICKED_UP">تم الاستلام من الراسل</option>
-              <option value="OUT_FOR_DELIVERY">مع المندوب للتوصيل</option>
-              <option value="DELIVERED">تم التسليم والتحصيل</option>
-              <option value="POSTPONED">مؤجل لليوم التالي</option>
-              <option value="RETURNED">مرتجع</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">المندوب المسؤول</label>
-            <select id="status-modal-courier" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm bg-white focus:border-indigo-500 focus:outline-none"></select>
-          </div>
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">ملاحظة التحديث</label>
-          <input type="text" id="status-modal-note" placeholder="مثال: استلم المندوب الشحنة وفي الطريق..." class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none" />
-        </div>
-        <div class="flex justify-end gap-2 pt-2">
-          <button type="button" id="cancel-status-modal-btn" class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700">إغلاق</button>
-          <button type="submit" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold">حفظ التحديث في السجل</button>
-        </div>
-      </form>
-
-      <div class="border-t border-slate-200 pt-3">
-        <h4 class="text-xs font-bold text-slate-600 mb-2">سجل الحركات السابقة:</h4>
-        <div id="status-modal-timeline" class="max-h-44 overflow-y-auto space-y-2 pr-1"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- SCRIPT -->
+  <!-- JAVASCRIPT -->
   <script>
-    const STATUS_MAP = {
-      CREATED: { label: 'تم إنشاء البوليصة', badge: 'bg-slate-100 text-slate-700 border-slate-300', dot: 'bg-slate-500', step: 1 },
-      PICKED_UP: { label: 'تم الاستلام من الراسل', badge: 'bg-sky-50 text-sky-700 border-sky-200', dot: 'bg-sky-500', step: 2 },
-      OUT_FOR_DELIVERY: { label: 'مع المندوب للتوصيل', badge: 'bg-amber-50 text-amber-800 border-amber-200', dot: 'bg-amber-500', step: 3 },
-      DELIVERED: { label: 'تم التسليم والتحصيل', badge: 'bg-emerald-50 text-emerald-800 border-emerald-200', dot: 'bg-emerald-500', step: 4 },
-      POSTPONED: { label: 'مؤجل لليوم التالي', badge: 'bg-purple-50 text-purple-800 border-purple-200', dot: 'bg-purple-500', step: 3 },
-      RETURNED: { label: 'مرتجع', badge: 'bg-rose-50 text-rose-800 border-rose-200', dot: 'bg-rose-500', step: 4 }
+    const SB_BASE = "https://fokypanshgtlowdmldix.supabase.co/rest/v1";
+    const SB_KEY = "sb_publishable_qqdpsmnxxFoTE3uDVfd1Rg_kLCMcw8";
+    const HEADERS = {
+      "apikey": SB_KEY,
+      "Authorization": `Bearer ${SB_KEY}`,
+      "Content-Type": "application/json",
+      "Prefer": "return=representation"
     };
 
-    let appState = {
-      company: {
-        name: 'براق للشحن | Buraq',
-        phone: '19988 / 01009988776',
-        email: 'info@buraq.com',
-        address: 'العاشر من رمضان',
-        defaultCompanyPct: 25,
-        terms: 'شركة براق للشحن (Buraq) وسيط توصيل بين الراسل والمستلم. يرجى مراجعة الشحنة في وجود المندوب.'
-      },
-      waybillPrintFormat: 'standard',
-      selectedWaybillOrderId: 'BRQ-1001',
-      couriers: [
-        { id: 'CR-1', name: 'كابتن محمد سعيد', phone: '01012345678', vehicle: 'موتوسيكل', zone: 'العاشر من رمضان والعبور' },
-        { id: 'CR-2', name: 'كابتن حسن عبد الله', phone: '01123456789', vehicle: 'سيارة / فان', zone: 'القاهرة الجديدة ومدينة نصر' },
-        { id: 'CR-3', name: 'كابتن إبراهيم طارق', phone: '01234567890', vehicle: 'موتوسيكل', zone: 'الزقازيق والشرقية' }
-      ],
-      orders: [
-        {
-          id: 'BRQ-1001',
-          createdAt: '2026-10-26 10:30 ص',
-          senderName: 'متجر تك زوون للإلكترونيات',
-          senderPhone: '01098765432',
-          senderAddress: 'العاشر من رمضان - الأردنية - مول الداون تاون',
-          recipientName: 'أحمد محمود عبد اللطيف',
-          recipientPhone: '01155443322',
-          recipientCity: 'القاهرة الجديدة - التجمع',
-          recipientAddress: 'التجمع الخامس - الحي الثالث - عمارة 44 شقة 12',
-          packageDesc: 'سماعة بلوتوث لاسلكية + باور بانك 20000',
-          pieces: 2,
-          weight: 1.5,
-          inspection: 'مسموح بفتح الشحنة للمعاينة',
-          fragile: 'قابل للكسر - عناية خاصة',
-          notes: 'الاتصال قبل الوصول بـ 30 دقيقة',
-          courierId: 'CR-2',
-          itemPrice: 950,
-          deliveryFee: 70,
-          companyPct: 25,
-          paymentType: 'COD',
-          status: 'OUT_FOR_DELIVERY',
-          timeline: [
-            { status: 'CREATED', time: '2026-10-26 10:30 ص', note: 'تم تسجيل الأوردر وإصدار بوليصة التوصيل' },
-            { status: 'PICKED_UP', time: '2026-10-26 12:15 م', note: 'تم استلام الشحنة من مقر التاجر' },
-            { status: 'OUT_FOR_DELIVERY', time: '2026-10-26 02:40 م', note: 'خرجت الشحنة للتوصيل مع كابتن حسن عبد الله' }
-          ]
-        },
-        {
-          id: 'BRQ-1002',
-          createdAt: '2026-10-26 09:15 ص',
-          senderName: 'أتيليه فريدة فاشون',
-          senderPhone: '01066554411',
-          senderAddress: 'العاشر من رمضان - المجاورة 39',
-          recipientName: 'مريم خالد الشامي',
-          recipientPhone: '01022334455',
-          recipientCity: 'العاشر من رمضان',
-          recipientAddress: 'المجاورة 14 - شارع القدس',
-          packageDesc: 'طقم ملابس كاجوال 3 قطع',
-          pieces: 3,
-          weight: 1.0,
-          inspection: 'مسموح بفتح الشحنة للمعاينة',
-          fragile: 'عادية',
-          notes: 'التسليم في الفترة المسائية',
-          courierId: 'CR-1',
-          itemPrice: 600,
-          deliveryFee: 40,
-          companyPct: 25,
-          paymentType: 'COD',
-          status: 'DELIVERED',
-          timeline: [
-            { status: 'CREATED', time: '2026-10-26 09:15 ص', note: 'تم إنشاء البوليصة' },
-            { status: 'DELIVERED', time: '2026-10-26 03:20 م', note: 'تم التسليم بنجاح وتحصيل مبلغ 640 ج.م' }
-          ]
-        }
-      ]
+    let cloudOrders = [];
+    let companyInfo = {
+      name: "براق للشحن • Buraq",
+      phone: "19988",
+      email: "info@buraq.com",
+      address: "العاشر من رمضان"
     };
 
-    try {
-      const saved = localStorage.getItem('buraq_delivery_state_v2');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (parsed && Array.isArray(parsed.orders)) {
-          appState = parsed;
-        }
-      }
-    } catch (e) {}
-
-    function saveState() {
+    // جلب الإعدادات من السحابة
+    async function loadSettingsFromCloud() {
       try {
-        localStorage.setItem('buraq_delivery_state_v2', JSON.stringify(appState));
-      } catch (e) {}
-    }
-
-    // Direct Cloud sync for Supabase
-    const SB_URL = "https://fokypanshgtlowdmldix.supabase.co/rest/v1/settings";
-    const SB_KEY = "sb_publishable_qqdpsmnxxFoTE3uDVFd1Rg_kLCMc7Ki";
-
-    async function syncCompanyFromCloud() {
-      try {
-        const res = await fetch(`${SB_URL}?select=*&limit=1`, {
-          headers: { "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}` }
-        });
+        const res = await fetch(`${SB_BASE}/settings?select=*&limit=1`, { headers: HEADERS });
         if (res.ok) {
           const list = await res.json();
           if (list && list.length > 0) {
             const row = list[0];
-            if (row['Company_ Name']) appState.company.name = row['Company_ Name'];
-            if (row.Phone) appState.company.phone = row.Phone;
-            if (row.Email) appState.company.email = row.Email;
-            if (row.Address) appState.company.address = row.Address;
-            saveState();
-            renderDashboard();
-            renderWaybill();
+            if (row['Company_ Name']) companyInfo.name = row['Company_ Name'];
+            if (row.Phone) companyInfo.phone = row.Phone;
+            if (row.Email) companyInfo.email = row.Email;
+            if (row.Address) companyInfo.address = row.Address;
+            document.getElementById('header-company-name').textContent = companyInfo.name;
           }
-        }
-      } catch (err) {}
-    }
-
-    async function syncCompanyToCloud(name, phone, email, address) {
-      try {
-        const getRes = await fetch(`${SB_URL}?select=*&limit=1`, {
-          headers: { "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}` }
-        });
-        const rows = await getRes.json();
-        
-        const payload = {
-          "Company_ Name": name,
-          "Phone": phone,
-          "Email": email,
-          "Address": address
-        };
-
-        if (rows && rows.length > 0) {
-          await fetch(`${SB_URL}?Company_%20Name=neq.___none___`, {
-            method: 'PATCH',
-            headers: {
-              "apikey": SB_KEY,
-              "Authorization": `Bearer ${SB_KEY}`,
-              "Content-Type": "application/json",
-              "Prefer": "return=minimal"
-            },
-            body: JSON.stringify(payload)
-          });
-        } else {
-          await fetch(SB_URL, {
-            method: 'POST',
-            headers: {
-              "apikey": SB_KEY,
-              "Authorization": `Bearer ${SB_KEY}`,
-              "Content-Type": "application/json",
-              "Prefer": "return=minimal"
-            },
-            body: JSON.stringify([payload])
-          });
         }
       } catch (e) {}
     }
 
-    function showToast(message, type = 'success') {
-      const container = document.getElementById('toast-container');
-      const toast = document.createElement('div');
-      const bg = type === 'success' ? 'bg-slate-900 border-emerald-500' : 'bg-rose-950 border-rose-500';
-      toast.className = `${bg} text-white text-xs sm:text-sm font-semibold px-4 py-3 rounded-xl shadow-lg border-r-4 flex items-center gap-2 transition-all duration-300`;
-      toast.innerHTML = `<span class="text-emerald-400">●</span><span>${message}</span>`;
-      container.appendChild(toast);
-      setTimeout(() => {
-        toast.style.opacity = '0';
-        setTimeout(() => toast.remove(), 300);
-      }, 3000);
-    }
-
-    function formatNowArabic() {
-      const now = new Date();
-      const datePart = now.toISOString().slice(0, 10);
-      let hours = now.getHours();
-      const mins = String(now.getMinutes()).padStart(2, '0');
-      const ampm = hours >= 12 ? 'م' : 'ص';
-      hours = hours % 12 || 12;
-      return `${datePart} ${String(hours).padStart(2, '0')}:${mins} ${ampm}`;
-    }
-
-    function getNextAwbId() {
-      let maxNum = 1000;
-      appState.orders.forEach(o => {
-        const m = String(o.id).match(/(\d+)/);
-        if (m) {
-          const n = parseInt(m[1], 10);
-          if (n > maxNum) maxNum = n;
+    // جلب البوالص من السحابة
+    async function loadOrdersFromCloud() {
+      try {
+        const res = await fetch(`${SB_BASE}/orders?select=*&order=id.desc`, { headers: HEADERS });
+        if (res.ok) {
+          const rows = await res.json();
+          cloudOrders = rows.map(r => r.data).filter(Boolean);
+          renderDashboard();
+          populateWaybillSelector();
+          renderWaybill();
         }
-      });
-      return `BRQ-${maxNum + 1}`;
-    }
-
-    function computeOrderFinancials(order) {
-      const itemPrice = Number(order.itemPrice) || 0;
-      const deliveryFee = Number(order.deliveryFee) || 0;
-      const companyPct = Number(order.companyPct) || 0;
-      const companyCommission = Math.round((deliveryFee * companyPct) / 100);
-      const courierShare = deliveryFee - companyCommission;
-      const totalCod = order.paymentType === 'PREPAID' ? 0 : (itemPrice + deliveryFee);
-      return { itemPrice, deliveryFee, companyPct, companyCommission, courierShare, totalCod };
-    }
-
-    function getCourierById(courierId) {
-      return appState.couriers.find(c => c.id === courierId) || null;
-    }
-
-    function generateBarcodeSvg(codeText, height = 44) {
-      const clean = String(codeText || 'SHP-1000');
-      let bars = '';
-      let x = 6;
-      for (let i = 0; i < clean.length; i++) {
-        const charCode = clean.charCodeAt(i);
-        const widths = [(charCode % 3) + 1.5, ((charCode >> 2) % 2) + 1, 1.5];
-        for (let b = 0; b < widths.length; b++) {
-          const w = widths[b];
-          if (b % 2 === 0) bars += `<rect x="${x}" y="2" width="${w}" height="${height}" fill="#0f172a" />`;
-          x += w + 1.4;
-        }
+      } catch (err) {
+        console.error("خطأ في جلب البوالص:", err);
       }
-      bars += `<rect x="${x}" y="2" width="2" height="${height}" fill="#0f172a" />`;
-      return `<svg viewBox="0 0 ${Math.max(x + 8, 160)} ${height + 4}" class="w-full max-w-[210px] h-11 mx-auto">${bars}</svg>`;
-    }
-
-    function generateQrSvg() {
-      return `<div class="w-14 h-14 bg-slate-900 text-white flex items-center justify-center font-bold text-[11px] rounded-lg">QR CODE</div>`;
-    }
-
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-panel').forEach(sec => sec.classList.add('hidden'));
-      const target = document.getElementById(`tab-${tabId}`);
-      if (target) target.classList.remove('hidden');
-
-      document.querySelectorAll('.nav-tab-btn').forEach(btn => {
-        if (btn.dataset.tab === tabId) {
-          btn.className = 'nav-tab-btn px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-indigo-600 text-white shadow';
-        } else {
-          btn.className = 'nav-tab-btn px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-300 hover:text-white hover:bg-slate-700/60';
-        }
-      });
-
-      if (tabId === 'dashboard') renderDashboard();
-      if (tabId === 'new-order') {
-        if (!document.getElementById('edit-order-id').value) prepareNewOrderForm();
-      }
-      if (tabId === 'waybill-view') {
-        populateWaybillSelector();
-        renderWaybill();
-      }
-      if (tabId === 'customer-tracking') renderCustomerTrackingPortal();
-      if (tabId === 'couriers') renderCouriersTab();
     }
 
     function renderDashboard() {
-      document.getElementById('header-company-name').textContent = appState.company.name;
-
-      const courierSelect = document.getElementById('filter-courier-select');
-      const currentCourierFilter = courierSelect.value || 'ALL';
-      courierSelect.innerHTML = `
-        <option value="ALL">كل الموصلاتية (المناديب)</option>
-        <option value="UNASSIGNED">بدون مندوب (غير معين)</option>
-        ${appState.couriers.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
-      `;
-      courierSelect.value = currentCourierFilter;
-
-      const totalOrders = appState.orders.length;
-      const deliveredOrders = appState.orders.filter(o => o.status === 'DELIVERED');
-      const inTransitOrders = appState.orders.filter(o => o.status === 'OUT_FOR_DELIVERY' || o.status === 'PICKED_UP');
-      const unassignedOrders = appState.orders.filter(o => !o.courierId);
-
-      let totalCodSum = 0, totalMerchantNet = 0, totalCompanyProfit = 0, totalCourierPayout = 0;
-      appState.orders.forEach(o => {
-        if (o.status === 'RETURNED') return;
-        const fin = computeOrderFinancials(o);
-        totalCodSum += fin.totalCod;
-        totalMerchantNet += fin.itemPrice;
-        totalCompanyProfit += fin.companyCommission;
-        totalCourierPayout += fin.courierShare;
-      });
-
-      document.getElementById('kpi-total-orders').textContent = totalOrders;
-      document.getElementById('kpi-delivered-sub').textContent = `${deliveredOrders.length} تم التسليم بنجاح`;
-      document.getElementById('kpi-total-cod').textContent = `${totalCodSum.toLocaleString()} ج.م`;
-      document.getElementById('kpi-merchant-net').textContent = `صافي التجار: ${totalMerchantNet.toLocaleString()} ج.م`;
-      document.getElementById('kpi-company-profit').textContent = `${totalCompanyProfit.toLocaleString()} ج.م`;
-      document.getElementById('kpi-courier-payout').textContent = `مستحقات الموصلاتية: ${totalCourierPayout.toLocaleString()} ج.م`;
-      document.getElementById('kpi-in-transit').textContent = inTransitOrders.length;
-      document.getElementById('kpi-pending-assign').textContent = `${unassignedOrders.length} بانتظار تعيين مندوب`;
-
-      const searchQ = document.getElementById('search-orders-input').value.trim().toLowerCase();
-      const statusFilter = document.getElementById('filter-status-select').value;
-      const courierFilter = document.getElementById('filter-courier-select').value;
-
-      const filtered = appState.orders.filter(o => {
-        if (statusFilter !== 'ALL' && o.status !== statusFilter) return false;
-        if (courierFilter === 'UNASSIGNED' && o.courierId) return false;
-        if (courierFilter !== 'ALL' && courierFilter !== 'UNASSIGNED' && o.courierId !== courierFilter) return false;
-        if (searchQ) {
-          const hay = `${o.id} ${o.senderName} ${o.senderPhone} ${o.recipientName} ${o.recipientPhone} ${o.recipientCity} ${o.packageDesc}`.toLowerCase();
-          if (!hay.includes(searchQ)) return false;
-        }
-        return true;
-      });
-
-      document.getElementById('filtered-count-badge').textContent = `${filtered.length} أوردر`;
-
       const tbody = document.getElementById('orders-table-body');
-      if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="py-10 text-center text-slate-400">لا توجد أوردرات مطابقة للبحث.</td></tr>`;
+      document.getElementById('kpi-total-orders').textContent = cloudOrders.length;
+      
+      let totalCod = 0;
+      cloudOrders.forEach(o => totalCod += (Number(o.itemPrice || 0) + Number(o.deliveryFee || 0)));
+      document.getElementById('kpi-total-cod').textContent = `${totalCod.toLocaleString()} ج.م`;
+
+      if (cloudOrders.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-slate-400">لا توجد بوالص مسجلة حتى الآن. اضغط "+ إصدار بوليصة" لإضافة أول أوردر.</td></tr>`;
         return;
       }
 
-      tbody.innerHTML = filtered.map(order => {
-        const fin = computeOrderFinancials(order);
-        const courier = getCourierById(order.courierId);
-        const st = STATUS_MAP[order.status] || STATUS_MAP.CREATED;
-        return `
-          <tr class="hover:bg-slate-50/90 transition">
-            <td class="py-3.5 px-4">
-              <div class="font-mono font-bold text-indigo-700 text-xs sm:text-sm">${order.id}</div>
-              <div class="text-[11px] text-slate-400">${order.createdAt}</div>
-            </td>
-            <td class="py-3.5 px-4">
-              <div class="font-bold text-slate-900">${order.senderName}</div>
-              <div class="text-xs text-slate-500 num-font">${order.senderPhone}</div>
-            </td>
-            <td class="py-3.5 px-4">
-              <div class="font-bold text-slate-900">${order.recipientName}</div>
-              <div class="text-xs text-slate-600">${order.recipientCity}</div>
-            </td>
-            <td class="py-3.5 px-4">
-              ${courier ? `<div class="text-xs font-bold text-slate-800">${courier.name}</div>` : `<span class="inline-block text-xs bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded-full font-semibold">غير معين</span>`}
-            </td>
-            <td class="py-3.5 px-4">
-              <div class="font-extrabold text-slate-900 num-font">${fin.totalCod.toLocaleString()} ج.م</div>
-            </td>
-            <td class="py-3.5 px-4">
-              <span class="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-full border ${st.badge}">
-                <span class="w-1.5 h-1.5 rounded-full ${st.dot}"></span>
-                ${st.label}
-              </span>
-            </td>
-            <td class="py-3.5 px-4 text-center">
-              <div class="flex items-center justify-center gap-1.5">
-                <button type="button" data-action="view-waybill" data-id="${order.id}" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold px-2.5 py-1.5 rounded-lg border border-indigo-200 transition">البوليصة</button>
-                <button type="button" data-action="open-status" data-id="${order.id}" class="bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1.5 rounded-lg border border-amber-200 transition">الحالة</button>
-                <button type="button" data-action="edit-order" data-id="${order.id}" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-2 py-1.5 rounded-lg transition">تعديل</button>
-              </div>
-            </td>
-          </tr>
-        `;
-      }).join('');
-    }
-
-    function populateCourierSelectInForm(selectedId = '') {
-      const sel = document.getElementById('assign-courier');
-      sel.innerHTML = `
-        <option value="">-- تعيين لاحقاً (بدون مندوب) --</option>
-        ${appState.couriers.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
-      `;
-      sel.value = selectedId;
-    }
-
-    function updateLiveFinancialCalc() {
-      const itemPrice = Number(document.getElementById('fin-item-price').value) || 0;
-      const deliveryFee = Number(document.getElementById('fin-delivery-fee').value) || 0;
-      const companyPct = Number(document.getElementById('fin-company-pct').value) || 0;
-      const paymentType = document.getElementById('fin-payment-type').value;
-
-      const companyCommission = Math.round((deliveryFee * companyPct) / 100);
-      const courierShare = deliveryFee - companyCommission;
-      const totalCod = paymentType === 'PREPAID' ? 0 : (itemPrice + deliveryFee);
-
-      document.getElementById('calc-merchant-net').textContent = `${itemPrice.toLocaleString()} ج.م`;
-      document.getElementById('calc-courier-fee').textContent = `${courierShare.toLocaleString()} ج.م`;
-      document.getElementById('calc-company-fee').textContent = `${companyCommission.toLocaleString()} ج.م`;
-      document.getElementById('calc-total-cod').textContent = `${totalCod.toLocaleString()} ج.م`;
-    }
-
-    function prepareNewOrderForm() {
-      document.getElementById('order-form').reset();
-      document.getElementById('edit-order-id').value = '';
-      document.getElementById('form-modal-title').textContent = 'إنشاء بوليصة توصيل جديدة';
-      document.getElementById('preview-next-awb').textContent = `AWB: ${getNextAwbId()}`;
-      document.getElementById('fin-company-pct').value = appState.company.defaultCompanyPct;
-      populateCourierSelectInForm('');
-      updateLiveFinancialCalc();
-    }
-
-    function loadOrderIntoForm(orderId) {
-      const order = appState.orders.find(o => o.id === orderId);
-      if (!order) return;
-      switchTab('new-order');
-      document.getElementById('edit-order-id').value = order.id;
-      document.getElementById('form-modal-title').textContent = `تعديل بوليصة (${order.id})`;
-      document.getElementById('sender-name').value = order.senderName;
-      document.getElementById('sender-phone').value = order.senderPhone;
-      document.getElementById('sender-address').value = order.senderAddress;
-      document.getElementById('recipient-name').value = order.recipientName;
-      document.getElementById('recipient-phone').value = order.recipientPhone;
-      document.getElementById('recipient-city').value = order.recipientCity;
-      document.getElementById('recipient-address').value = order.recipientAddress;
-      document.getElementById('package-desc').value = order.packageDesc;
-      document.getElementById('fin-item-price').value = order.itemPrice;
-      document.getElementById('fin-delivery-fee').value = order.deliveryFee;
-      populateCourierSelectInForm(order.courierId || '');
-      updateLiveFinancialCalc();
-    }
-
-    function populateWaybillSelector() {
-      const sel = document.getElementById('waybill-order-selector');
-      sel.innerHTML = appState.orders.map(o => `<option value="${o.id}">${o.id} — ${o.recipientName}</option>`).join('');
-      if (appState.selectedWaybillOrderId) sel.value = appState.selectedWaybillOrderId;
-    }
-
-    function renderWaybill() {
-      const container = document.getElementById('printable-waybill-area');
-      const order = appState.orders.find(o => o.id === appState.selectedWaybillOrderId) || appState.orders[0];
-      if (!order) {
-        container.innerHTML = `<p class="text-center text-slate-400 py-8">لا توجد بوليصة لعرضها.</p>`;
-        return;
-      }
-      const fin = computeOrderFinancials(order);
-      const courier = getCourierById(order.courierId);
-      container.innerHTML = `
-        <div class="border-b-2 border-slate-900 pb-3 flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <h2 class="text-xl font-extrabold text-slate-950">${appState.company.name}</h2>
-            <p class="text-xs text-slate-600 num-font">خدمة العملاء: ${appState.company.phone}</p>
-          </div>
-          <div class="text-center">
-            ${generateBarcodeSvg(order.id)}
-            <div class="font-mono font-extrabold text-base">${order.id}</div>
-          </div>
-        </div>
-        <div class="grid grid-cols-2 gap-3 my-3">
-          <div class="border border-slate-900 rounded p-3">
-            <span class="text-xs font-bold text-slate-500">الراسل:</span>
-            <div class="font-bold">${order.senderName} (${order.senderPhone})</div>
-            <div class="text-xs text-slate-600">${order.senderAddress}</div>
-          </div>
-          <div class="border border-slate-900 rounded p-3 bg-slate-50">
-            <span class="text-xs font-bold text-slate-500">المستلم:</span>
-            <div class="font-bold">${order.recipientName} (${order.recipientPhone})</div>
-            <div class="text-xs text-slate-600">${order.recipientCity} - ${order.recipientAddress}</div>
-          </div>
-        </div>
-        <div class="border-2 border-slate-900 rounded p-3 bg-slate-900 text-white flex justify-between items-center my-3">
-          <span class="font-bold">المطلوب تحصيله (COD):</span>
-          <span class="text-2xl font-black">${fin.totalCod.toLocaleString()} ج.م</span>
-        </div>
-      `;
-    }
-
-    function renderCustomerTrackingPortal(forcedAwb = '') {
-      const pillsBox = document.getElementById('sample-awb-pills');
-      pillsBox.innerHTML = appState.orders.map(o => `
-        <button type="button" data-sample-awb="${o.id}" class="px-2 py-1 rounded bg-slate-100 text-indigo-700 font-mono font-bold text-xs">${o.id}</button>
-      `).join('');
-
-      const input = document.getElementById('track-search-input');
-      const queryAwb = (forcedAwb || input.value || (appState.orders[0] && appState.orders[0].id) || '').trim().toUpperCase();
-      input.value = queryAwb;
-
-      const resultBox = document.getElementById('tracking-result-box');
-      const order = appState.orders.find(o => o.id.toUpperCase() === queryAwb);
-      if (!order) {
-        resultBox.innerHTML = `<div class="p-4 bg-rose-50 text-rose-700 text-center rounded-xl text-xs font-bold">لم يتم العثور على شحنة بهذا الرقم</div>`;
-        return;
-      }
-      const st = STATUS_MAP[order.status] || STATUS_MAP.CREATED;
-      resultBox.innerHTML = `
-        <div class="p-4 bg-slate-900 text-white rounded-xl flex justify-between items-center">
-          <div>
-            <div class="text-xs text-indigo-300 font-mono">${order.id}</div>
-            <div class="font-bold">${order.recipientName} - ${order.recipientCity}</div>
-          </div>
-          <span class="px-3 py-1 bg-indigo-600 rounded-full text-xs font-bold">${st.label}</span>
-        </div>
-      `;
-    }
-
-    function renderCouriersTab() {
-      const tbody = document.getElementById('couriers-table-body');
-      tbody.innerHTML = appState.couriers.map(c => `
+      tbody.innerHTML = cloudOrders.map(o => `
         <tr class="hover:bg-slate-50">
-          <td class="py-3 px-3 font-bold">${c.name}</td>
-          <td class="py-3 px-3 text-xs">${c.zone}</td>
-          <td class="py-3 px-3 text-center num-font">${c.phone}</td>
-          <td class="py-3 px-3 font-bold text-indigo-700">${c.vehicle}</td>
+          <td class="py-3 px-4 font-mono font-bold text-indigo-700">${o.id}</td>
+          <td class="py-3 px-4 text-xs text-slate-500">${o.createdAt}</td>
+          <td class="py-3 px-4 font-bold text-slate-800">${o.senderName}<div class="text-xs text-slate-400 num-font">${o.senderPhone}</div></td>
+          <td class="py-3 px-4 font-bold text-slate-800">${o.recipientName}<div class="text-xs text-slate-400">${o.recipientCity}</div></td>
+          <td class="py-3 px-4 font-extrabold text-slate-900 num-font">${(Number(o.itemPrice) + Number(o.deliveryFee)).toLocaleString()} ج.م</td>
+          <td class="py-3 px-4 text-center">
+            <button type="button" onclick="openWaybillView('${o.id}')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-lg text-xs font-bold border border-indigo-200 transition">عرض وطباعة</button>
+          </td>
         </tr>
       `).join('');
     }
 
-    function openStatusModal(orderId) {
-      const order = appState.orders.find(o => o.id === orderId);
-      if (!order) return;
-      document.getElementById('status-modal-order-id').value = order.id;
-      document.getElementById('status-modal-awb').textContent = `${order.id} - ${order.recipientName}`;
-      document.getElementById('status-modal-select').value = order.status;
-      const courierSel = document.getElementById('status-modal-courier');
-      courierSel.innerHTML = `<option value="">-- بدون مندوب --</option>` + appState.couriers.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-      courierSel.value = order.courierId || '';
-      document.getElementById('status-modal').classList.remove('hidden');
-      document.getElementById('status-modal').classList.add('flex');
+    function populateWaybillSelector() {
+      const sel = document.getElementById('waybill-order-selector');
+      if (cloudOrders.length === 0) {
+        sel.innerHTML = `<option>لا توجد شحنات</option>`;
+        return;
+      }
+      sel.innerHTML = cloudOrders.map(o => `<option value="${o.id}">${o.id} - ${o.recipientName}</option>`).join('');
     }
 
-    function closeStatusModal() {
-      document.getElementById('status-modal').classList.add('hidden');
-      document.getElementById('status-modal').classList.remove('flex');
+    function renderWaybill(selectedId) {
+      const area = document.getElementById('printable-waybill-area');
+      const order = cloudOrders.find(o => o.id === (selectedId || document.getElementById('waybill-order-selector').value)) || cloudOrders[0];
+      if (!order) {
+        area.innerHTML = `<p class="text-center text-slate-400 py-6">لا توجد بوليصة لعرضها</p>`;
+        return;
+      }
+      const total = Number(order.itemPrice || 0) + Number(order.deliveryFee || 0);
+      area.innerHTML = `
+        <div class="border-b-2 border-slate-900 pb-3 flex justify-between items-center">
+          <div>
+            <h2 class="text-xl font-black">${companyInfo.name}</h2>
+            <p class="text-xs text-slate-500">خدمة العملاء: ${companyInfo.phone} | التاريخ: ${order.createdAt}</p>
+          </div>
+          <div class="text-left font-mono font-bold text-lg text-indigo-700">${order.id}</div>
+        </div>
+        <div class="grid grid-cols-2 gap-4 my-4">
+          <div class="border p-3 rounded-lg bg-slate-50">
+            <span class="text-xs font-bold text-slate-400">بيانات الراسل:</span>
+            <div class="font-bold">${order.senderName}</div>
+            <div class="text-xs num-font">${order.senderPhone}</div>
+          </div>
+          <div class="border p-3 rounded-lg bg-slate-50">
+            <span class="text-xs font-bold text-slate-400">بيانات المستلم:</span>
+            <div class="font-bold">${order.recipientName}</div>
+            <div class="text-xs">${order.recipientCity} - ${order.recipientAddress}</div>
+            <div class="text-xs font-bold num-font">${order.recipientPhone}</div>
+          </div>
+        </div>
+        <div class="border border-slate-200 p-2.5 rounded-lg text-xs my-2">
+          <span class="font-bold text-slate-700">محتويات الشحنة:</span> ${order.packageDesc}
+        </div>
+        <div class="border-2 border-slate-900 bg-slate-900 text-white p-3 rounded-lg flex justify-between items-center mt-3">
+          <span class="font-bold">المطلوب تحصيله عند الاستلام (COD):</span>
+          <span class="text-2xl font-black num-font">${total.toLocaleString()} ج.م</span>
+        </div>
+      `;
+    }
+
+    function openWaybillView(id) {
+      document.getElementById('waybill-order-selector').value = id;
+      renderWaybill(id);
+      switchTab('waybill-view');
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+      document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+      document.querySelectorAll('.nav-tab-btn').forEach(btn => {
+        btn.className = btn.dataset.tab === tabId
+          ? 'nav-tab-btn px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-indigo-600 text-white shadow'
+          : 'nav-tab-btn px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-300 hover:text-white hover:bg-slate-700/60';
+      });
+      if (tabId === 'dashboard') loadOrdersFromCloud();
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      // مزامنة فورية آمنة في الخلفية
-      setTimeout(syncCompanyFromCloud, 300);
+      loadSettingsFromCloud();
+      loadOrdersFromCloud();
 
-      document.querySelectorAll('.nav-tab-btn').forEach(btn => {
-        btn.addEventListener('click', () => switchTab(btn.dataset.tab));
-      });
+      // تحديث تلقائي كل 10 ثوانٍ لسماع أي بوليصة يضيفها أي عميل
+      setInterval(loadOrdersFromCloud, 10000);
 
-      document.getElementById('quick-new-order-btn').addEventListener('click', () => {
-        document.getElementById('edit-order-id').value = '';
-        switchTab('new-order');
-      });
-
-      document.getElementById('search-orders-input').addEventListener('input', renderDashboard);
-      document.getElementById('filter-status-select').addEventListener('change', renderDashboard);
-      document.getElementById('filter-courier-select').addEventListener('change', renderDashboard);
-
-      document.getElementById('orders-table-body').addEventListener('click', e => {
-        const btn = e.target.closest('button[data-action]');
-        if (!btn) return;
-        const action = btn.dataset.action;
-        const id = btn.dataset.id;
-        if (action === 'view-waybill') {
-          appState.selectedWaybillOrderId = id;
-          switchTab('waybill-view');
-        } else if (action === 'open-status') {
-          openStatusModal(id);
-        } else if (action === 'edit-order') {
-          loadOrderIntoForm(id);
-        }
-      });
-
-      ['fin-item-price', 'fin-delivery-fee', 'fin-company-pct', 'fin-payment-type'].forEach(id => {
-        document.getElementById(id).addEventListener('input', updateLiveFinancialCalc);
-      });
-
+      document.querySelectorAll('.nav-tab-btn').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
+      document.getElementById('quick-new-order-btn').addEventListener('click', () => switchTab('new-order'));
       document.getElementById('cancel-form-btn').addEventListener('click', () => switchTab('dashboard'));
+      document.getElementById('refresh-cloud-btn').addEventListener('click', loadOrdersFromCloud);
+      document.getElementById('waybill-order-selector').addEventListener('change', e => renderWaybill(e.target.value));
 
-      document.getElementById('order-form').addEventListener('submit', e => {
+      // نموذج حفظ البوليصة سحابياً
+      document.getElementById('order-form').addEventListener('submit', async e => {
         e.preventDefault();
-        const editId = document.getElementById('edit-order-id').value;
-        const newOrder = {
-          id: editId || getNextAwbId(),
-          createdAt: formatNowArabic(),
+        const btn = document.getElementById('save-order-submit-btn');
+        btn.disabled = true;
+        btn.textContent = 'جاري الحفظ في السحابة...';
+
+        const newAwbId = `BRQ-${Math.floor(1000 + Math.random() * 9000)}`;
+        const orderData = {
+          id: newAwbId,
+          createdAt: new Date().toLocaleString('ar-EG'),
           senderName: document.getElementById('sender-name').value.trim(),
           senderPhone: document.getElementById('sender-phone').value.trim(),
-          senderAddress: document.getElementById('sender-address').value.trim(),
           recipientName: document.getElementById('recipient-name').value.trim(),
           recipientPhone: document.getElementById('recipient-phone').value.trim(),
-          recipientCity: document.getElementById('recipient-city').value,
+          recipientCity: document.getElementById('recipient-city').value.trim(),
           recipientAddress: document.getElementById('recipient-address').value.trim(),
           packageDesc: document.getElementById('package-desc').value.trim(),
-          pieces: Number(document.getElementById('package-pieces').value) || 1,
-          weight: Number(document.getElementById('package-weight').value) || 1,
-          inspection: document.getElementById('package-inspection').value,
-          fragile: document.getElementById('package-fragile').value,
-          notes: document.getElementById('package-notes').value.trim(),
-          courierId: document.getElementById('assign-courier').value,
           itemPrice: Number(document.getElementById('fin-item-price').value) || 0,
           deliveryFee: Number(document.getElementById('fin-delivery-fee').value) || 0,
-          companyPct: Number(document.getElementById('fin-company-pct').value) || 0,
-          paymentType: document.getElementById('fin-payment-type').value,
-          status: 'CREATED',
-          timeline: [{ status: 'CREATED', time: formatNowArabic(), note: 'تم تسجيل الأوردر' }]
+          status: 'CREATED'
         };
 
-        if (editId) {
-          const idx = appState.orders.findIndex(o => o.id === editId);
-          if (idx > -1) appState.orders[idx] = { ...appState.orders[idx], ...newOrder };
-        } else {
-          appState.orders.unshift(newOrder);
-        }
-        appState.selectedWaybillOrderId = newOrder.id;
-        saveState();
-        showToast(`تم حفظ البوليصة ${newOrder.id}`);
-        switchTab('waybill-view');
-      });
+        try {
+          const res = await fetch(`${SB_BASE}/orders`, {
+            method: 'POST',
+            headers: HEADERS,
+            body: JSON.stringify({
+              awb_id: newAwbId,
+              data: orderData
+            })
+          });
 
-      document.getElementById('close-status-modal-btn').addEventListener('click', closeStatusModal);
-      document.getElementById('cancel-status-modal-btn').addEventListener('click', closeStatusModal);
-
-      document.getElementById('status-update-form').addEventListener('submit', e => {
-        e.preventDefault();
-        const orderId = document.getElementById('status-modal-order-id').value;
-        const newStatus = document.getElementById('status-modal-select').value;
-        const courierId = document.getElementById('status-modal-courier').value;
-        const note = document.getElementById('status-modal-note').value.trim();
-
-        const order = appState.orders.find(o => o.id === orderId);
-        if (order) {
-          order.status = newStatus;
-          order.courierId = courierId;
-          order.timeline.push({ status: newStatus, time: formatNowArabic(), note: note || 'تحديث الحالة' });
-          saveState();
-          closeStatusModal();
-          renderDashboard();
-          showToast('تم تحديث الحالة بنجاح');
+          if (res.ok) {
+            alert(`تم حفظ البوليصة (${newAwbId}) في السحابة بنجاح! ستظهر فوراً عند الجميع.`);
+            document.getElementById('order-form').reset();
+            await loadOrdersFromCloud();
+            openWaybillView(newAwbId);
+          } else {
+            const err = await res.json();
+            alert('تعذر الحفظ في السحابة: ' + JSON.stringify(err));
+          }
+        } catch (err) {
+          alert('خطأ اتصال بالشبكة: ' + err.message);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'حفظ وإرسال للسحابة فوراً';
         }
       });
 
+      // إعدادات الشركة
       const settingsModal = document.getElementById('settings-modal');
       document.getElementById('open-settings-btn').addEventListener('click', () => {
-        document.getElementById('setting-company-name').value = appState.company.name;
-        document.getElementById('setting-company-phone').value = appState.company.phone;
-        document.getElementById('setting-company-email').value = appState.company.email || '';
-        document.getElementById('setting-company-address').value = appState.company.address || '';
-        document.getElementById('setting-default-pct').value = appState.company.defaultCompanyPct;
-        document.getElementById('setting-terms').value = appState.company.terms;
+        document.getElementById('setting-company-name').value = companyInfo.name;
+        document.getElementById('setting-company-phone').value = companyInfo.phone;
+        document.getElementById('setting-company-email').value = companyInfo.email || '';
+        document.getElementById('setting-company-address').value = companyInfo.address || '';
         settingsModal.classList.remove('hidden');
         settingsModal.classList.add('flex');
       });
@@ -1268,7 +470,6 @@
         settingsModal.classList.add('hidden');
         settingsModal.classList.remove('flex');
       };
-
       document.getElementById('close-settings-btn').addEventListener('click', closeSettings);
       document.getElementById('cancel-settings-btn').addEventListener('click', closeSettings);
 
@@ -1282,22 +483,42 @@
         const email = document.getElementById('setting-company-email').value.trim();
         const address = document.getElementById('setting-company-address').value.trim();
 
-        appState.company.name = name;
-        appState.company.phone = phone;
-        appState.company.email = email;
-        appState.company.address = address;
-        saveState();
-
-        await syncCompanyToCloud(name, phone, email, address);
-
-        btn.textContent = 'حفظ الإعدادات سحابياً';
-        closeSettings();
-        renderDashboard();
-        showToast('تم حفظ إعدادات الشركة بنجاح!');
+        try {
+          await fetch(`${SB_BASE}/settings?Company_%20Name=neq.___none___`, {
+            method: 'PATCH',
+            headers: { ...HEADERS, "Prefer": "return=minimal" },
+            body: JSON.stringify({ "Company_ Name": name, "Phone": phone, "Email": email, "Address": address })
+          });
+          companyInfo = { name, phone, email, address };
+          document.getElementById('header-company-name').textContent = name;
+          closeSettings();
+          alert('تم حفظ إعدادات الشركة سحابياً بنجاح!');
+        } catch (err) {
+          alert('خطأ في حفظ الإعدادات: ' + err.message);
+        } finally {
+          btn.textContent = 'حفظ سحابياً';
+        }
       });
 
-      // Initial Render
-      renderDashboard();
+      // تتبع الشحنة
+      document.getElementById('track-search-btn').addEventListener('click', () => {
+        const query = document.getElementById('track-search-input').value.trim().toUpperCase();
+        const found = cloudOrders.find(o => o.id.toUpperCase() === query);
+        const box = document.getElementById('tracking-result-box');
+        if (!found) {
+          box.innerHTML = `<div class="p-3 bg-rose-50 text-rose-700 font-bold text-center rounded-xl text-xs">لا توجد بوليصة بهذا الرقم في السحابة</div>`;
+          return;
+        }
+        box.innerHTML = `
+          <div class="bg-slate-900 text-white p-4 rounded-xl flex justify-between items-center">
+            <div>
+              <div class="text-xs text-indigo-400 font-mono">${found.id}</div>
+              <div class="font-bold">${found.recipientName} - ${found.recipientCity}</div>
+            </div>
+            <span class="px-3 py-1 bg-emerald-600 rounded-full text-xs font-bold">مسجلة في السحابة</span>
+          </div>
+        `;
+      });
     });
   </script>
 </body>
